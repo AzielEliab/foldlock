@@ -167,3 +167,14 @@ python -m pytest -q
 ```
 
 VECTORS.txt (four lines, orig_size 63) must unfold with `verified: True` and `zip: False`.
+
+## Cite this
+
+Aziel Eliab. FoldLock. https://github.com/AzielEliab/foldlock. https://foldlock-download-tracker.vibelock.workers.dev. https://doi.org/10.5281/zenodo.22257762.
+
+- Catalog: https://aziel-runtime.vibelock.workers.dev/
+- Worker homepage: https://foldlock-download-tracker.vibelock.workers.dev/
+- Counted download (gzip HTTP 200, no 302): https://foldlock-download-tracker.vibelock.workers.dev/download
+- GitHub: https://github.com/AzielEliab/foldlock
+- Citation JSON: https://foldlock-download-tracker.vibelock.workers.dev/cite.json
+- DOI: https://doi.org/10.5281/zenodo.22257762
