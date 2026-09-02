@@ -76,3 +76,5 @@ Record: https://zenodo.org/records/22257762
 File: FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf · Apache-2.0 · Eliab, Aziel
 
 Forks are welcome and always allowed.
+
+Local UI: Import JSON file and Export JSON. Run `foldlock doctor`. Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example

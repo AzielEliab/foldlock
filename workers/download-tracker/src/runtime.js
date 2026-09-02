@@ -9,6 +9,10 @@ import {
 } from "./codec.js";
 
 const PRODUCT = "foldlock";
+const EXAMPLE_PAYLOAD = {
+  "text": "the cat and the dog"
+};
+
 const VERSION = "0.3.0";
 const SPEC = "foldlock-v0.3";
 const HOST = "https://foldlock-download-tracker.vibelock.workers.dev";
@@ -95,6 +99,8 @@ Record: https://zenodo.org/records/22257762
 File: FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf · Apache-2.0 · Eliab, Aziel
 
 Forks are welcome and always allowed.
+
+Local UI: Import JSON file and Export JSON. Run `foldlock doctor`. Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example
 `;
 
 function corsHeaders() {
@@ -139,6 +145,7 @@ function openapiSpec(origin) {
     },
     servers: [{ url: origin }],
     paths: {
+            "/v1/example": { get: { operationId: "foldlockExample", summary: "Sample JSON payload. Does not increment downloads.", responses: { "200": { description: "OK" } } } },
       "/v1/health": {
         get: {
           operationId: "foldlock_health",
@@ -369,6 +376,16 @@ export async function handleRuntimeApi(request, url) {
       doi: DOI,
     });
   }
+  if ((path === "/v1/example" || path === "/v1/example/") && (request.method === "GET" || request.method === "HEAD")) {
+    return json({
+      ok: true,
+      product: PRODUCT,
+      author: "Aziel Eliab",
+      example: EXAMPLE_PAYLOAD,
+      note: "Sample payload only. Does not increment downloads.",
+    });
+  }
+
   if (path === "/v1/skill" && request.method === "GET") {
     return new Response(SKILL, {
       status: 200,
