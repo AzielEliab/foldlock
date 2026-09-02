@@ -1,0 +1,14 @@
+name = "foldlock-download-tracker"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+workers_dev = true
+account_id = "ac575a9b822bea2bed97d0ab73aed238"
+
+[[kv_namespaces]]
+binding = "DOWNLOADS"
+id = "e827dc7b72504437a72934dec122a1d7"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/", "/download", "/download/*", "/stats", "/event", "/go", "/count", "/install.sh", "/v1", "/v1/*", "/openapi.json", "/ai", "/ai/*", "/mcp", "/mcp/"]

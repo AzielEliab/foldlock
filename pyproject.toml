@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "foldlock"
+version = "0.3.0"
+description = "FoldLock: algorithmic tether-word suppression. UTF-8 text fold. Not zip. Author Aziel Eliab."
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Aziel Eliab"}]
+requires-python = ">=3.10"
+keywords = [
+    "foldlock",
+    "tether",
+    "suppression",
+    "utf-8",
+    "fld3",
+    "teth-1",
+    "not-zip",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing",
+    "Intended Audience :: Developers",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+foldlock = "foldlock.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/AzielEliab/foldlock"
+Download = "https://foldlock-download-tracker.vibelock.workers.dev/download?asset=foldlock-0.3.0.tar.gz"
+Issues = "https://github.com/AzielEliab/foldlock/issues"
+Counted-downloads = "https://foldlock-download-tracker.vibelock.workers.dev/"
+Paper = "https://doi.org/10.5281/zenodo.22257762"
+
+[tool.setuptools.packages.find]
+include = ["foldlock*"]
+
+[tool.setuptools.package-data]
+foldlock = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

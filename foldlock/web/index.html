@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FoldLock — fold text, not zip</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="simple">
+  <header>
+    <div class="tag">FoldLock · v0.3.0 · loopback · not zip</div>
+    <h1>FoldLock</h1>
+    <p class="motto">Pull the little words. Put them back. Not zip.</p>
+    <p class="lede">
+      This tool takes common little words (as, is, has, to, and, or, the…)
+      out of a story so the file can get smaller. Unfold puts them back.
+      We check the size and the hash. Short notes can get bigger. That is honest.
+    </p>
+  </header>
+
+  <aside class="banner limit" role="note">
+    THIS IS: reversible tether-word suppression on UTF-8 text;
+    3-byte opcode per tether; exact restore of letters and bound ASCII spaces.
+    THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks;
+    UL; EmployeeLock; TemporalLock; GodLock; a published bake-off.
+    Ratios are receipts not trophies. Short strings can grow.
+    zip: False · method: tether-suppression
+  </aside>
+
+  <div class="view-toggle" role="group" aria-label="Simple or advanced view">
+    <button type="button" id="view-simple" class="view on" aria-pressed="true">Simple</button>
+    <button type="button" id="view-advanced" class="view" aria-pressed="false">Advanced</button>
+  </div>
+
+  <section class="counts" aria-live="polite">
+    <div><span id="c-hits">0</span><label>tether hits</label></div>
+    <div><span id="c-orig">0</span><label>orig bytes</label></div>
+    <div><span id="c-folded">0</span><label>folded bytes</label></div>
+    <div class="ok"><span id="c-zip">False</span><label>zip</label></div>
+    <div><span id="c-ratio">—</span><label>ratio</label></div>
+    <div class="ok"><span id="c-ok">—</span><label>verified</label></div>
+  </section>
+
+  <div class="actions simple-actions">
+    <button type="button" id="btn-fold" class="big">Fold</button>
+    <button type="button" id="btn-unfold" class="big">Unfold</button>
+    <button type="button" id="btn-verify" class="big">Verify</button>
+    <input id="open-text" type="file" hidden>
+    <input id="open-fld" type="file" accept=".fld,application/octet-stream" hidden>
+  </div>
+
+  <form id="text-form" autocomplete="off">
+    <fieldset>
+      <legend>Your text</legend>
+      <label for="plain"><span class="kicker">Type or paste UTF-8 text</span> Then tap Fold.</label>
+      <textarea id="plain" name="plain" rows="7" placeholder="the cat and the dog"></textarea>
+    </fieldset>
+  </form>
+
+  <div class="actions advanced-only">
+    <button type="button" id="btn-sample">Sample vectors</button>
+    <button type="button" id="btn-info">Info</button>
+    <button type="button" id="btn-export">Export receipt</button>
+    <button type="button" id="btn-doctor">Doctor</button>
+    <button type="button" id="btn-dl-fld">Download .fld</button>
+    <button type="button" id="btn-dl-txt">Download restored</button>
+  </div>
+
+  <section class="report" aria-live="polite">
+    <p id="kid-plain" class="kid">Type a sentence. Tap Fold. Tap Verify to check the hash. This is not zip.</p>
+    <p id="verify-line" class="sha-line"></p>
+    <div id="advanced-panel" class="advanced-panel" hidden>
+      <h2>Receipt</h2>
+      <pre id="rows-pre">{}</pre>
+    </div>
+  </section>
+
+  <footer>
+    <p>Apache-2.0 · Aziel Eliab · 2026 · Bound to 127.0.0.1:8872 · Forks welcome and always allowed.</p>
+    <p class="foot-note">Not zip. Not WhistleLock (sibling paper, different product). Paper FL-WP-0.3 · DOI 10.5281/zenodo.22257762</p>
+  </footer>
+  <script src="/app.js"></script>
+</body>
+</html>
