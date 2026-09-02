@@ -100,7 +100,22 @@ File: FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf · Apache-2.0 · Eliab, Aziel
 
 Forks are welcome and always allowed.
 
-Local UI: Import JSON file and Export JSON. Run `foldlock doctor`. Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example
+Local UI: Import JSON file and Export JSON. Run foldlock doctor.
+
+## Catalog + local UI
+
+Author: **Aziel Eliab**. Honest scope: Algorithmic tether-word suppression on UTF-8 text. Not zip.
+
+- Catalog product: https://aziel-runtime.vibelock.workers.dev/p/foldlock/
+- Catalog OpenAPI: https://aziel-runtime.vibelock.workers.dev/openapi.json
+- Catalog MCP: POST https://aziel-runtime.vibelock.workers.dev/mcp
+- This Worker skill: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/skill
+- This Worker OpenAPI: https://foldlock-download-tracker.vibelock.workers.dev/openapi.json
+- Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example
+
+Local UI: Import JSON file (type=file) and Export JSON. Then foldlock doctor.
+
+Grok: import catalog or Worker OpenAPI as a custom tool. ChatGPT: GPT Actions. Venice: HTTP tools.
 `;
 
 function corsHeaders() {
