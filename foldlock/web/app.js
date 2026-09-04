@@ -34,17 +34,20 @@
     document.getElementById("c-ratio").textContent = typeof ratio === "number" ? ratio.toFixed(3) : "—";
     const ok = v.ok === true || (state.unfold && state.unfold.verified === true);
     document.getElementById("c-ok").textContent = v.ok == null && !(state.unfold) ? "—" : (ok ? "True" : "False");
+    const strat = r.strategy || state.method || "—";
+    const stratEl = document.getElementById("c-strat");
+    if (stratEl) stratEl.textContent = strat;
     if (state.sample_text != null) plain.value = state.sample_text;
     if (state.error) {
       kid.textContent = "Could not fold or unfold. " + state.error + " This is not zip.";
     } else if (ok) {
-      kid.textContent = "Hashes match. The words went back. zip is False. Method is tether-suppression.";
+      kid.textContent = "Hashes match. The words went back. zip is False. Strategy is " + strat + ".";
     } else {
-      kid.textContent = "Type a sentence. Tap Fold. Tap Verify to check the hash. This is not zip.";
+      kid.textContent = "Type a sentence. Tap Fold. Tap Verify to check the hash. Short notes stay the same size. This is not zip.";
     }
     const sha = state.orig_sha256 || "";
     verifyLine.textContent = sha
-      ? ("orig_sha256=" + sha + "  hits=" + (r.tether_hits || 0) + "  zip=False  method=tether-suppression")
+      ? ("orig_sha256=" + sha + "  hits=" + (r.tether_hits || 0) + "  zip=False  strategy=" + strat)
       : "";
     rowsPre.textContent = JSON.stringify(state, null, 2);
   }

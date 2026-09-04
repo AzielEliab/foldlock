@@ -30,7 +30,7 @@ the dev extra. No network. No ML. No zlib for the fold.
 
 ## Where to change things
 
-- Codec: `foldlock/engine.py`
+- Codec: `foldlock/engine.py` (FLD3 TETH), `foldlock/sir.py`, `foldlock/uni1.py`, `foldlock/classify.py`, `foldlock/packs.py`
 - CLI: `foldlock/cli.py`
 - Doctor: `foldlock/doctor.py`
 - Local UI: `foldlock/ui.py`, `foldlock/web/`

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FoldLock v0.3 — tether-word algorithmic suppression. Not a zip wrapper.
+"""FoldLock v0.8 UNI1 — adaptive tether/SIR fold. Not a zip wrapper.
 
 Python 3 stdlib only in this module (hashlib, re, struct). No zlib for the fold.
 
@@ -13,20 +13,28 @@ import re
 import struct
 from pathlib import Path
 
-ENGINE_VERSION = "0.3.0"
-SPEC_STRING = "foldlock-v0.3"
-PAPER_ID = "FL-WP-0.3"
-REPRO_PAPER_ID = "FL-WP-0.3-R"
+ENGINE_VERSION = "0.8.0"
+SPEC_STRING = "foldlock-v0.8-UNI1"
+PAPER_ID = "FL-WP-0.8"
+REPRO_PAPER_ID = "FL-WP-0.8-R"
+METHOD_PAPER_ID = "FL-WP-0.3"
 
 LIMITATION = (
-    "THIS IS: reversible tether-word suppression on UTF-8 text; "
-    "3-byte opcode per tether; exact restore of letters and bound ASCII spaces. "
-    "THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks; "
-    "UL; EmployeeLock; TemporalLock; GodLock; a published bake-off. "
-    "Ratios are receipts not trophies. Short strings can grow."
+    "THIS IS: adaptive reversible fold on UTF-8 text (UNI1 champion shell); "
+    "tether-word suppression (TETH/FLD4) and structural SIR/FLD5 with optional "
+    "dictionary, abbreviation, number, and peer packs; exact restore of the "
+    "original bytes; short strings left alone; already-compressed input refused. "
+    "THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks "
+    "or that FoldLock beats zstd on all files; a universal compressor; "
+    "translation of all inputs to Latin; encryption; UL; EmployeeLock; "
+    "TemporalLock; GodLock; a published industry bake-off. "
+    "Prose/text is the win lane. Code and markup often passthrough. "
+    "Ratios are receipts not trophies. beats_zstd is per-file when zstd is "
+    "available, never a global championship."
 )
 
 MAGIC = b"FLD3"
+MAGIC_UNI1 = b"UNI1"
 MAGIC_RETIRED = b"FLD2"
 LEXICON_ID = 1
 HEADER = "<4sBBQ32s"  # magic, lexicon_id, reserved, orig_size, orig_sha256
@@ -327,28 +335,44 @@ def _receipt_from_raw(raw: bytes, body: bytes, stats: dict) -> dict:
         "spec": SPEC_STRING,
         "paper": PAPER_ID,
         "limitation": LIMITATION,
+        "magic": "FLD3",
+        "strategy": "teth",
+        "method": "tether-suppression",
     }
 
 
-def fold_bytes(raw: bytes) -> tuple[bytes, dict]:
-    """Fold UTF-8 bytes. Refuse binary. Return (container, receipt)."""
+def pack_fld3(raw: bytes, body: bytes, stats: dict) -> bytes:
+    """Wrap a TETH stream in an FLD3 container."""
+    digest = hashlib.sha256(raw).digest()
+    header = struct.pack(ONDISK, MAGIC, LEXICON_ID, 0, len(raw), digest, len(body))
+    return header + body
+
+
+def fold_fld3_bytes(raw: bytes) -> tuple[bytes, dict]:
+    """Always emit FLD3 (may grow). Used for bakeoff and FLD3 vectors."""
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as e:
         raise ValueError(
-            "FoldLock v0.3 folds UTF-8 text by tether suppression. "
+            "FoldLock v0.8 folds UTF-8 text by tether suppression. "
             "Binary input is refused. This is not a zip wrapper."
         ) from e
-    digest = hashlib.sha256(raw).digest()
     body, stats = suppress(text)
-    header = struct.pack(ONDISK, MAGIC, LEXICON_ID, 0, len(raw), digest, len(body))
+    blob = pack_fld3(raw, body, stats)
     receipt = _receipt_from_raw(raw, body, stats)
-    return header + body, receipt
+    return blob, receipt
 
 
-def fold(src: Path, dst: Path) -> dict:
+def fold_bytes(raw: bytes, *, name: str = "", latin_pack: bool = False) -> tuple[bytes, dict]:
+    """Adaptive fold. Refuse compressed. Passthrough if the fold would grow."""
+    from foldlock.uni1 import fold_adaptive
+
+    return fold_adaptive(raw, name=name, latin_pack=latin_pack)
+
+
+def fold(src: Path, dst: Path, *, latin_pack: bool = False) -> dict:
     raw = src.read_bytes()
-    blob, receipt = fold_bytes(raw)
+    blob, receipt = fold_bytes(raw, name=src.name, latin_pack=latin_pack)
     dst.write_bytes(blob)
     receipt["in"] = str(src)
     receipt["out"] = str(dst)
@@ -358,12 +382,12 @@ def fold(src: Path, dst: Path) -> dict:
 def read_container(blob: bytes) -> tuple[dict, bytes]:
     n = struct.calcsize(ONDISK)
     if len(blob) >= 4 and blob[:4] == MAGIC_RETIRED:
-        raise ValueError("FLD2 (zlib wrapper) is retired. Refold with FoldLock v0.3.")
+        raise ValueError("FLD2 (zlib wrapper) is retired. Refold with FoldLock v0.8.")
     if len(blob) < n:
-        raise ValueError("file too short for FoldLock v0.3 header")
+        raise ValueError("file too short for FoldLock FLD3 header")
     magic, lex, _res, orig_size, digest, body_len = struct.unpack(ONDISK, blob[:n])
     if magic != MAGIC:
-        raise ValueError("not a FoldLock v0.3 file")
+        raise ValueError("not a FoldLock FLD3 file")
     if lex != LEXICON_ID:
         raise ValueError(f"unsupported lexicon {lex}")
     body = blob[n:]
@@ -383,26 +407,68 @@ def read_container(blob: bytes) -> tuple[dict, bytes]:
     }, body
 
 
-def unfold_bytes(blob: bytes) -> tuple[bytes, dict]:
-    meta, body = read_container(blob)
-    text = expand(body)
-    raw = text.encode("utf-8")
-    if len(raw) != meta["orig_size"]:
-        raise ValueError("orig_size mismatch after unfold — suppression restore failed")
-    got = hashlib.sha256(raw).digest()
-    if got != meta["digest_raw"]:
-        raise ValueError("orig_sha256 mismatch — unfold refused")
-    return raw, {
+def _verified_restore(raw: bytes, method: str, extra: dict | None = None) -> dict:
+    got = hashlib.sha256(raw).hexdigest()
+    meta = {
         "orig_size": len(raw),
-        "orig_sha256": got.hex(),
+        "orig_sha256": got,
         "verified": True,
-        "method": "tether-suppression",
+        "method": method,
         "zip": False,
         "version": ENGINE_VERSION,
         "spec": SPEC_STRING,
         "paper": PAPER_ID,
         "limitation": LIMITATION,
     }
+    if extra:
+        meta.update(extra)
+    return meta
+
+
+def unfold_bytes(blob: bytes) -> tuple[bytes, dict]:
+    if len(blob) >= 4 and blob[:4] == MAGIC_RETIRED:
+        raise ValueError("FLD2 (zlib wrapper) is retired. Refold with FoldLock v0.8.")
+    if len(blob) >= 4 and blob[:4] == MAGIC:
+        meta, body = read_container(blob)
+        text = expand(body)
+        raw = text.encode("utf-8")
+        if len(raw) != meta["orig_size"]:
+            raise ValueError("orig_size mismatch after unfold — suppression restore failed")
+        got = hashlib.sha256(raw).digest()
+        if got != meta["digest_raw"]:
+            raise ValueError("orig_sha256 mismatch — unfold refused")
+        return raw, _verified_restore(
+            raw,
+            "tether-suppression",
+            {"strategy": "teth", "magic": "FLD3"},
+        )
+    if len(blob) >= 4 and blob[:4] == MAGIC_UNI1:
+        from foldlock.uni1 import read_uni1, unfold_uni1_payload
+
+        meta, payload = read_uni1(blob)
+        text = unfold_uni1_payload(meta, payload)
+        raw = text.encode("utf-8")
+        if len(raw) != meta["orig_size"]:
+            raise ValueError("orig_size mismatch after unfold — suppression restore failed")
+        got = hashlib.sha256(raw).digest()
+        if got != meta["digest_raw"]:
+            raise ValueError("orig_sha256 mismatch — unfold refused")
+        return raw, _verified_restore(
+            raw,
+            meta.get("method", "adaptive"),
+            {
+                "strategy": meta.get("strategy"),
+                "magic": "UNI1",
+                "class": meta.get("class"),
+                "latin_pack": meta.get("latin_pack", False),
+            },
+        )
+    # Identity: declined fold / already-unfolded bytes. Does not grow.
+    return blob, _verified_restore(
+        blob,
+        "passthrough",
+        {"strategy": "passthrough", "magic": "PASS", "passthrough": True},
+    )
 
 
 def unfold(src: Path, dst: Path) -> dict:
@@ -433,12 +499,34 @@ def count_hits(body: bytes) -> int:
 
 
 def info_bytes(blob: bytes) -> dict:
-    meta, body = read_container(blob)
-    meta.pop("digest_raw", None)
-    meta["magic"] = "FLD3"
-    meta["tether_hits"] = count_hits(body)
-    meta["limitation"] = LIMITATION
-    return meta
+    if len(blob) >= 4 and blob[:4] == MAGIC_RETIRED:
+        raise ValueError("FLD2 (zlib wrapper) is retired. Refold with FoldLock v0.8.")
+    if len(blob) >= 4 and blob[:4] == MAGIC:
+        meta, body = read_container(blob)
+        meta.pop("digest_raw", None)
+        meta["magic"] = "FLD3"
+        meta["tether_hits"] = count_hits(body)
+        meta["limitation"] = LIMITATION
+        return meta
+    if len(blob) >= 4 and blob[:4] == MAGIC_UNI1:
+        from foldlock.uni1 import info_uni1
+
+        return info_uni1(blob)
+    digest = hashlib.sha256(blob).hexdigest()
+    return {
+        "magic": "PASS",
+        "method": "passthrough",
+        "strategy": "passthrough",
+        "passthrough": True,
+        "orig_size": len(blob),
+        "orig_sha256": digest,
+        "tether_hits": 0,
+        "zip": False,
+        "version": ENGINE_VERSION,
+        "spec": SPEC_STRING,
+        "paper": PAPER_ID,
+        "limitation": LIMITATION,
+    }
 
 
 def info(src: Path) -> dict:
