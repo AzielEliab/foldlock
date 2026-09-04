@@ -132,6 +132,10 @@ The Worker hosts a **stateless** preview API. It does not increment DOWNLOADS.
 
 Banner: not zip.
 
+Catalog card fields to bump on **aziel-runtime** (separate deploy) and the
+Downloadable-software listing hint for azielcorpuslibrary:
+[docs/catalog-aziel-runtime.md](docs/catalog-aziel-runtime.md).
+
 ## AI (Grok, ChatGPT, Venice)
 
 Always send `User-Agent: Mozilla/5.0`. Empty agents can 403.

@@ -36,6 +36,7 @@ the dev extra. No network. No ML. No zlib for the fold.
 - Local UI: `foldlock/ui.py`, `foldlock/web/`
 - Skill: `SKILL.md`
 - Spec: `docs/whitepaper.md`
+- Catalog bump (aziel-runtime + corpus listing hint): `docs/catalog-aziel-runtime.md`
 - Flutter: `mobile/`
 - Isolated counter: `workers/download-tracker/`
 
