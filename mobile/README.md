@@ -7,7 +7,7 @@ Offline. No analytics. Dark matte / gold.
 
 Application id: `com.azieeliab.foldlock`
 
-Not zip. Not a store listing. Not a separate repo.
+Zip-class SOTA compression engine. Not a store listing. Not a separate repo.
 
 ## Open in Android Studio / Xcode
 
@@ -23,8 +23,8 @@ flutter run
 
 ## Honest scope
 
-THIS IS reversible tether-word / UNI1 adaptive fold on UTF-8 text.
-THIS IS NOT zip. Ratios are receipts. Short strings are left alone.
+THIS IS compression software and a compression engine (zip-class SOTA adaptive UNI1).
+THIS IS NOT the ZIP file format. Ratios are per-file receipts. Short strings are left alone.
 
 ## Desktop package (counted download)
 

@@ -19,7 +19,7 @@ the dev extra. No network. No ML. No zlib for the fold.
 
 ## Ground rules
 
-1. **Not zip.** Do not wrap zlib/gzip/DEFLATE and keep the name FoldLock.
+1. **Compression engine, not the ZIP file format.** Do not wrap zlib/gzip/DEFLATE and keep the name FoldLock.
 2. **TETH-1 is append-only.** Do not reorder IDs 0..111.
 3. **Unfold is a gate.** Refuse unless `len == orig_size` AND SHA-256 matches.
 4. **UI binds loopback only** (`127.0.0.1:8872`). Do not listen on `0.0.0.0`. No telemetry. No CDN.
