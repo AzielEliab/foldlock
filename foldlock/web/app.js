@@ -1,4 +1,4 @@
-/* FoldLock UI. No CDN. No telemetry. Not zip. */
+/* FoldLock UI. No CDN. No telemetry. Zip-class compression engine. */
 (function () {
   const kid = document.getElementById("kid-plain");
   const verifyLine = document.getElementById("verify-line");
@@ -39,11 +39,11 @@
     if (stratEl) stratEl.textContent = strat;
     if (state.sample_text != null) plain.value = state.sample_text;
     if (state.error) {
-      kid.textContent = "Could not fold or unfold. " + state.error + " This is not zip.";
+      kid.textContent = "Could not fold or unfold. " + state.error + " This is a compression engine, not the ZIP format.";
     } else if (ok) {
       kid.textContent = "Hashes match. The words went back. zip is False. Strategy is " + strat + ".";
     } else {
-      kid.textContent = "Type a sentence. Tap Fold. Tap Verify to check the hash. Short notes stay the same size. This is not zip.";
+      kid.textContent = "Type a sentence. Tap Fold. Tap Verify to check the hash. Short notes stay the same size. This is a compression engine, not the ZIP format.";
     }
     const sha = state.orig_sha256 || "";
     verifyLine.textContent = sha
@@ -144,7 +144,7 @@
   const doc = document.getElementById("btn-doctor");
   if (doc) doc.addEventListener("click", function () {
     post("/api/doctor", {}).then(function (j) {
-      kid.textContent = j.ok ? "Doctor passed. zip is False. No network." : "Doctor failed. See Advanced.";
+      kid.textContent = j.ok ? "Doctor passed. Compression engine. zip is False. No network." : "Doctor failed. See Advanced.";
       rowsPre.textContent = JSON.stringify(j, null, 2);
     });
   });

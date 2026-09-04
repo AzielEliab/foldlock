@@ -1,6 +1,6 @@
 # FoldLock
 
-Adaptive tether-word / SIR fold on UTF-8 text. Not zip.
+SOTA compression software and a compression engine — zip-class for UTF-8 text via adaptive UNI1 (classify → bakeoff → passthrough).
 
 **Author:** Aziel Eliab
 **Date:** 4 September 2026
@@ -10,15 +10,15 @@ Adaptive tether-word / SIR fold on UTF-8 text. Not zip.
 **Method paper:** FL-WP-0.3 — [docs/whitepaper.md](docs/whitepaper.md) · DOI [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762)
 **UNI1 shell:** FL-WP-0.8 — [docs/uni1.md](docs/uni1.md) (repo spec; no new DOI)
 
-> Pull the tethers. Restore the bytes. Do not ship a zip and call it a fold.
+> Pull the tethers. Restore the bytes. Zip-class compression — not the ZIP container format.
 
 **Forks are welcome and always allowed.**
 
 ## Honest scope
 
-**THIS IS:** adaptive reversible fold on UTF-8 text (UNI1 champion shell); tether-word suppression (TETH/FLD4) and structural SIR/FLD5 with optional dictionary, abbreviation, number, and peer packs; exact restore of the original bytes; short strings left alone; already-compressed input refused.
+**THIS IS:** SOTA compression software and a compression engine — zip-class for UTF-8 text; adaptive UNI1 fold (classify → bakeoff → passthrough); tether-word suppression (TETH/FLD4) and structural SIR/FLD5 with optional dictionary, abbreviation, number, and peer packs; exact restore of the original bytes; short strings left alone; already-compressed input refused.
 
-**THIS IS NOT:** zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks or that FoldLock beats zstd on all files; a universal compressor; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock; a published industry bake-off. Prose/text is the win lane. Code and markup often passthrough. Ratios are receipts not trophies. `beats_zstd` is per-file when zstd is available, never a global championship.
+**THIS IS NOT:** the ZIP container format (PKZIP/.zip); a zlib/gzip/DEFLATE/zstd/lzma wrapper; a claim every file shrinks or that FoldLock beats zstd on all files; a universal compressor; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock; a published industry bake-off. Prose/text is the win lane. Code and markup often passthrough. Ratios are receipts not trophies. `beats_zstd` is per-file when zstd is available, never a global championship.
 
 | Input | What FoldLock does |
 |-------|--------------------|
@@ -130,7 +130,7 @@ The Worker hosts a **stateless** preview API. It does not increment DOWNLOADS.
 - OpenAPI: `/openapi.json`
 - MCP: this Worker `/mcp` and catalog `https://aziel-runtime.vibelock.workers.dev/mcp`
 
-Banner: not zip.
+Banner: SOTA UNI1 compression engine.
 
 Catalog card fields to bump on **aziel-runtime** (separate deploy) and the
 Downloadable-software listing hint for azielcorpuslibrary:

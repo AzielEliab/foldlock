@@ -1,4 +1,4 @@
-"""FoldLock: adaptive tether/SIR fold on UTF-8 text. Not zip.
+"""FoldLock: SOTA zip-class compression engine for UTF-8 text (adaptive UNI1).
 
 Author: Aziel Eliab, 2026. Apache-2.0.
 Forks are welcome and always allowed.

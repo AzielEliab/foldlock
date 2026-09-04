@@ -1,5 +1,5 @@
 name: foldlock
-description: Algorithmic tether-word suppression. UTF-8 text fold. Not zip.
+description: SOTA zip-class compression engine for UTF-8 text. Adaptive UNI1.
 publish_to: "none"
 version: 0.8.0+1
 

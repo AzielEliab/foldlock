@@ -1,7 +1,7 @@
 {
   "private": true,
   "type": "module",
-  "description": "FoldLock isolated download tracker + hosted /v1",
+  "description": "FoldLock isolated download tracker + hosted /v1 compression engine",
   "license": "Apache-2.0",
   "dependencies": {
     "wrangler": "^4.127.1"

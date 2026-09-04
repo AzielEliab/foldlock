@@ -24,14 +24,14 @@ const ZENODO = "https://zenodo.org/records/22257762";
 
 export const SKILL = `---
 name: FoldLock
-description: Use this when folding or unfolding UTF-8 text with FoldLock UNI1 adaptive tether/SIR suppression (not zip). Hosted preview via /v1. Author Aziel Eliab.
+description: Use this when compressing or restoring UTF-8 text with FoldLock, a zip-class compression engine (SOTA adaptive UNI1). Hosted preview via /v1. Author Aziel Eliab.
 ---
 
 # FoldLock
 
-FoldLock is an **adaptive** fold for UTF-8 text. It classifies the input, competes allowed strategies (TETH tether-word suppression and SIR densification with peer / abbreviation / number packs), and **passthroughs** if the fold would grow. It is **not zip**. Magics: FLD3 (TETH) and UNI1 (adaptive). Lexicon: TETH-1. Author: **Aziel Eliab**.
+FoldLock is **compression software** and a **compression engine** — zip-class for UTF-8 text, not the ZIP container format. It ships a **SOTA** adaptive UNI1 fold: classify → bakeoff → passthrough (TETH tether-word suppression and SIR densification with peer / abbreviation / number packs). Magics: FLD3 (TETH) and UNI1 (adaptive). Lexicon: TETH-1. Author: **Aziel Eliab**.
 
-Use FoldLock when someone asks to **fold** English-like UTF-8 text, **unfold** a \`.fld\` / FLD3 / UNI1 blob, or check a fold receipt (strategy, hits, ratio, \`beats_zstd\`). Do **not** use it for zip, gzip, photos, or "make every file smaller."
+Use FoldLock when someone asks to **compress** / **fold** English-like UTF-8 text, **unfold** a \`.fld\` / FLD3 / UNI1 blob, or check a fold receipt (strategy, hits, ratio, \`beats_zstd\`). Do **not** use it for ZIP archives, gzip, photos, or "make every file smaller."
 
 Always send a normal \`User-Agent\` (for example \`Mozilla/5.0\`). Cloudflare Workers may 403 empty agents.
 
@@ -39,7 +39,7 @@ Always send a normal \`User-Agent\` (for example \`Mozilla/5.0\`). Cloudflare Wo
 
 - Fold a UTF-8 string and show a receipt (\`zip: false\`, winning \`strategy\`, hits, ratio). Short strings stay the same size.
 - Unfold an FLD3 / UNI1 / passthrough blob (base64) and confirm \`verified: true\`.
-- Health / skill / OpenAPI. Never invent a restore. Never claim zip. Never claim every file beats zstd.
+- Health / skill / OpenAPI. Never invent a restore. Never claim the ZIP container format. Never claim every file beats zstd.
 
 Hosted preview caps input around 8 KB. Bigger files use the local package: \`foldlock fold\` / \`foldlock unfold\`.
 
@@ -51,7 +51,7 @@ Host: \`https://foldlock-download-tracker.vibelock.workers.dev\`
 |--------|------|------|
 | GET | \`/v1/health\` | Liveness. Does not increment downloads. |
 | GET | \`/v1/skill\` | This markdown. Does not increment downloads. |
-| POST | \`/v1/fold-preview\` | Small UTF-8 text in → receipt + FLD3/UNI1/passthrough base64. Not zip. |
+| POST | \`/v1/fold-preview\` | Small UTF-8 text in → receipt + FLD3/UNI1/passthrough base64. Compression engine. |
 | POST | \`/v1/unfold-preview\` | FLD3/UNI1/passthrough base64 in → verified restore or error. |
 
 OpenAPI: \`https://foldlock-download-tracker.vibelock.workers.dev/openapi.json\`
@@ -89,9 +89,9 @@ Grok: import the catalog OpenAPI as a custom tool. ChatGPT: GPT Actions. Venice:
 
 ## Honest banner
 
-THIS IS: adaptive reversible fold on UTF-8 text (UNI1 champion shell); tether-word suppression and SIR with optional packs; exact restore; short strings left alone; already-compressed input refused.
+THIS IS: SOTA compression software and a compression engine — zip-class for UTF-8 text; adaptive UNI1 fold (classify → bakeoff → passthrough); tether-word suppression and SIR with optional packs; exact restore; short strings left alone; already-compressed input refused.
 
-THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks or that FoldLock beats zstd on all files; a universal compressor; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock.
+THIS IS NOT: the ZIP container format (PKZIP/.zip); a zlib/gzip/DEFLATE/zstd/lzma wrapper; a claim every file shrinks or that FoldLock beats zstd on all files; a universal compressor; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock.
 
 Prose/text is the win lane. Code and markup often passthrough. \`beats_zstd\` is per-file when zstd is available.
 
@@ -107,7 +107,7 @@ Local UI: Import JSON file and Export JSON. Run foldlock doctor.
 
 ## Catalog + local UI
 
-Author: **Aziel Eliab**. Honest scope: Adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip.
+Author: **Aziel Eliab**. Honest scope: SOTA compression engine — zip-class adaptive UNI1 for UTF-8 text. Not the ZIP container format.
 
 - Catalog product: https://aziel-runtime.vibelock.workers.dev/p/foldlock/
 - Catalog OpenAPI: https://aziel-runtime.vibelock.workers.dev/openapi.json
@@ -156,7 +156,7 @@ function openapiSpec(origin) {
     info: {
       title: "FoldLock runtime",
       version: VERSION,
-      summary: "Adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip.",
+      summary: "SOTA zip-class compression engine for UTF-8 text (adaptive UNI1).",
       description: LIMITATION,
       license: { name: "Apache-2.0", identifier: "Apache-2.0" },
       contact: { name: "Aziel Eliab", url: "https://github.com/AzielEliab/foldlock" },
@@ -167,7 +167,7 @@ function openapiSpec(origin) {
       "/v1/health": {
         get: {
           operationId: "foldlock_health",
-          summary: "Liveness. Does not increment download KV. Not zip.",
+          summary: "Liveness for FoldLock compression engine. Does not increment download KV.",
           responses: { "200": { description: "ok" } },
         },
       },
@@ -181,7 +181,7 @@ function openapiSpec(origin) {
       "/v1/fold-preview": {
         post: {
           operationId: "foldlock_fold-preview",
-          summary: "Small UTF-8 text in, receipt + FLD3/UNI1/passthrough base64 out. Cap ~8KB. Not zip.",
+          summary: "Compress small UTF-8 text → receipt + FLD3/UNI1/passthrough base64. Cap ~8KB. SOTA adaptive UNI1 engine.",
           requestBody: {
             required: true,
             content: {
@@ -197,7 +197,7 @@ function openapiSpec(origin) {
       "/v1/unfold-preview": {
         post: {
           operationId: "foldlock_unfold-preview",
-          summary: "FLD3/UNI1/passthrough base64 in, verified restore or error. Not zip.",
+          summary: "Decompress FLD3/UNI1/passthrough base64 → verified restore or error.",
           requestBody: {
             required: true,
             content: { "application/json": { schema: { type: "object" } } },
@@ -231,23 +231,23 @@ function aiHtml(origin) {
 curl -A Mozilla/5.0 ${origin}/v1/skill
 curl -A Mozilla/5.0 -X POST ${origin}/v1/fold-preview -H 'content-type: application/json' \\
   -d '{"text":"the cat and the dog"}'</pre>
-<p>GET/POST under <code>/v1</code> never increment the download counter. Hosted preview is not zip.</p>
+<p>GET/POST under <code>/v1</code> never increment the download counter. Hosted preview is a compression engine, not the ZIP container format.</p>
 <p><a href="/">Downloads</a></p>
 </body></html>`;
 }
 
 function mcpTools() {
   return [
-    { name: "foldlock_health", description: "Liveness. Does not increment download KV. Not zip.", inputSchema: { type: "object" } },
+    { name: "foldlock_health", description: "Liveness for FoldLock compression engine. Does not increment download KV.", inputSchema: { type: "object" } },
     { name: "foldlock_skill", description: "Return FoldLock skill markdown. Does not increment download KV.", inputSchema: { type: "object" } },
     {
       name: "foldlock_fold-preview",
-      description: "Small UTF-8 text in, receipt + FLD3/UNI1/passthrough base64 out. Not zip. Cap ~8KB.",
+      description: "Compress small UTF-8 text → receipt + FLD3/UNI1/passthrough base64. Cap ~8KB. SOTA adaptive UNI1 engine.",
       inputSchema: { type: "object", additionalProperties: true },
     },
     {
       name: "foldlock_unfold-preview",
-      description: "FLD3/UNI1/passthrough base64 in, verified restore or error. Not zip.",
+      description: "Decompress FLD3/UNI1/passthrough base64 → verified restore or error.",
       inputSchema: { type: "object", additionalProperties: true },
     },
   ];
@@ -276,7 +276,7 @@ async function foldPreview(body) {
     zip: false,
     method: receipt.method || "adaptive",
     strategy: receipt.strategy,
-    banner: "not zip",
+    banner: "SOTA UNI1 compression engine",
     limitation: LIMITATION,
     receipt,
     b64: b64encode(blob),
@@ -308,7 +308,7 @@ async function unfoldPreview(body) {
     zip: false,
     method: meta.method || "adaptive",
     strategy: meta.strategy,
-    banner: "not zip",
+    banner: "SOTA UNI1 compression engine",
     limitation: LIMITATION,
     verified: true,
     text: meta.text,
@@ -390,7 +390,7 @@ export async function handleRuntimeApi(request, url) {
       zip: false,
       method: "adaptive",
       paper: PAPER,
-      banner: "not zip",
+      banner: "SOTA UNI1 compression engine",
       limitation: LIMITATION,
       catalog: CATALOG,
       author: "Aziel Eliab",

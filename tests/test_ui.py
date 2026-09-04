@@ -33,7 +33,8 @@ def test_ui_get_root_honest_scope() -> None:
         assert "FoldLock" in html
         assert "THIS IS" in html
         assert "THIS IS NOT" in html
-        assert "zip: False" in html or "not zip" in html.lower()
+        assert "zip: False" in html
+        assert "compression engine" in html.lower()
         assert "Fold" in html
         assert "Unfold" in html
         assert "Verify" in html

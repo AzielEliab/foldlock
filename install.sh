@@ -29,4 +29,4 @@ echo
 echo "Installed FoldLock."
 echo "Run:  foldlock ui"
 echo "Then open http://127.0.0.1:8872  (loopback only)"
-echo "Not zip. Author: Aziel Eliab."
+echo "Zip-class compression engine. Author: Aziel Eliab."

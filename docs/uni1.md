@@ -1,6 +1,7 @@
 # FoldLock v0.8 UNI1
 
-Adaptive champion shell around tether-word suppression. Not zip.
+SOTA adaptive champion shell: a zip-class compression engine for UTF-8
+text (classify → bakeoff → passthrough). Not the ZIP container format.
 Author: **Aziel Eliab**. No new Zenodo DOI — the TETH-1 method paper
 remains FL-WP-0.3.
 

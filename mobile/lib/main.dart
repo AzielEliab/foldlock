@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 
 const limitation =
-    'THIS IS reversible tether-word suppression on UTF-8 text. '
-    'THIS IS NOT zip, zlib, gzip, a claim every file shrinks, UL, '
-    'EmployeeLock, TemporalLock, or GodLock. Ratios are receipts. '
-    'Short strings can grow. Author Aziel Eliab.';
+    'THIS IS SOTA compression software and a compression engine — '
+    'zip-class for UTF-8 text (UNI1). '
+    'THIS IS NOT the ZIP container format, a zlib/gzip wrapper, a claim '
+    'every file shrinks, UL, EmployeeLock, TemporalLock, or GodLock. '
+    'Ratios are receipts. Short strings are left alone. Author Aziel Eliab.';
 
 const vectors = 'the cat and the dog\n'
     'As is has to and or etc.\n'
@@ -41,7 +42,7 @@ class FoldPage extends StatefulWidget {
 class _FoldPageState extends State<FoldPage> {
   final controller = TextEditingController(text: vectors);
   String kid =
-      'Type a sentence. This phone app shows the idea. Full fold is the desktop package. Not zip.';
+      'Type a sentence. This phone app shows the idea. Full fold is the desktop compression engine.';
 
   @override
   void dispose() {
@@ -77,7 +78,7 @@ class _FoldPageState extends State<FoldPage> {
                   setState(() {
                     kid =
                         'Desktop FoldLock folds this with 3-byte opcodes. '
-                        'Unfold checks size and SHA-256. This phone screen does not wrap zip.';
+                        'Unfold checks size and SHA-256. This phone screen is a compression engine, not a ZIP wrapper.';
                   });
                 },
                 child: const Text('Fold'),

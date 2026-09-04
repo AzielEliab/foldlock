@@ -1,8 +1,8 @@
 """Local FoldLock UI. Bind 127.0.0.1:8872 only.
 
 Buttons: Fold file, Unfold, Info, Verify (hashes), Doctor, Sample vectors,
-Export receipt. Simple / Advanced. Show zip: False, method tether-suppression,
-hits, ratio. No CDN, no telemetry. Loopback only.
+Export receipt. Simple / Advanced. Show zip: False, method adaptive UNI1,
+hits, ratio. Zip-class compression engine. No CDN, no telemetry. Loopback only.
 """
 
 from __future__ import annotations
@@ -343,7 +343,7 @@ def serve(host: str = "127.0.0.1", port: int = 8872) -> None:
     bound_host, bound_port = httpd.server_address[:2]
     print(
         f"FoldLock UI http://{bound_host}:{bound_port} "
-        "(loopback only; not zip; UNI1 adaptive)"
+        "(loopback only; zip-class compression engine; UNI1 adaptive)"
     )
     try:
         httpd.serve_forever()

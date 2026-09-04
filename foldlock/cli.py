@@ -23,7 +23,7 @@ from foldlock.uni1 import FoldRefuse
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="foldlock",
-        description="FoldLock v0.8 UNI1 — adaptive tether/SIR fold. Not zip.",
+        description="FoldLock v0.8 UNI1 — SOTA zip-class compression engine for UTF-8 text.",
         epilog=LIMITATION,
     )
     sub = parser.add_subparsers(dest="cmd", required=True)

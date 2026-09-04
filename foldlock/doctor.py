@@ -204,7 +204,15 @@ def _check_identity() -> Check:
         text = (root / rel).read_text(encoding="utf-8")
         if "GodLock.AZ" in text or "Collin Horton" in text:
             return _fail("identity", rel)
-    return _ok("identity", "Aziel Eliab")
+    skill = (root / "SKILL.md").read_text(encoding="utf-8")
+    if "compression engine" not in skill.lower() or "SOTA" not in skill:
+        return _fail("identity", "SKILL.md must name compression engine / SOTA")
+    readme_lead = "\n".join((root / "README.md").read_text(encoding="utf-8").splitlines()[:6])
+    if "compression" not in readme_lead.lower():
+        return _fail("identity", "README.md must lead with compression")
+    if "compression engine" not in LIMITATION.lower() or "SOTA" not in LIMITATION:
+        return _fail("identity", "LIMITATION must name compression engine / SOTA")
+    return _ok("identity", "Aziel Eliab · compression engine")
 
 
 def _check_loopback() -> Check:

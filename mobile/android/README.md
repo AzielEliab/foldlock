@@ -18,4 +18,4 @@ Then:
 
 Or open the generated `android/` folder in Android Studio.
 Offline. No analytics. Application id: `com.azieeliab.foldlock`.
-Not zip.
+Zip-class compression engine. Not the ZIP container format.

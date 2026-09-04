@@ -251,7 +251,7 @@ echo
 echo "Installed FoldLock."
 echo "Run:  foldlock ui"
 echo "Then open http://127.0.0.1:8872  (loopback only)"
-echo "Not zip. Author: Aziel Eliab."
+echo "Zip-class compression engine. Author: Aziel Eliab."
 `;
 }
 
@@ -295,11 +295,11 @@ async function indexHtml(env) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FoldLock — Aziel Eliab</title>
-<meta name="description" content="Algorithmic tether-word suppression for UTF-8 text by Aziel Eliab; not zip.">
+<meta name="description" content="SOTA zip-class compression engine for UTF-8 text by Aziel Eliab. Adaptive UNI1 fold.">
 <meta name="author" content="Aziel Eliab">
 <link rel="canonical" href="https://foldlock-download-tracker.vibelock.workers.dev/">
 <meta property="og:title" content="FoldLock — Aziel Eliab">
-<meta property="og:description" content="Algorithmic tether-word suppression for UTF-8 text by Aziel Eliab; not zip.">
+<meta property="og:description" content="SOTA zip-class compression engine for UTF-8 text by Aziel Eliab. Adaptive UNI1 fold.">
 <meta property="og:url" content="https://foldlock-download-tracker.vibelock.workers.dev/">
 <meta property="og:type" content="website">
 <script type="application/ld+json">
@@ -315,7 +315,8 @@ async function indexHtml(env) {
   "downloadUrl": "https://foldlock-download-tracker.vibelock.workers.dev/download",
   "license": "https://www.apache.org/licenses/LICENSE-2.0",
   "url": "https://foldlock-download-tracker.vibelock.workers.dev/",
-  "description": "Algorithmic tether-word suppression for UTF-8 text by Aziel Eliab; not zip.",
+  "description": "SOTA zip-class compression engine for UTF-8 text by Aziel Eliab. Adaptive UNI1 fold.",
+  "applicationCategory": "DeveloperApplication",
   "identifier": "https://doi.org/10.5281/zenodo.22257762"
 }
 </script>
@@ -347,8 +348,8 @@ async function indexHtml(env) {
 </style>
 <body>
   <h1>FoldLock</h1>
-  <p class="motto">Algorithmic tether-word suppression. UTF-8 text fold. Not zip. Author Aziel Eliab.</p>
-  <p class="banner">${LIMITATION}<br>zip: False · method: tether-suppression. Verify hashes in the local UI. Run <code>foldlock doctor</code>.</p>
+  <p class="motto">SOTA compression engine for UTF-8 text. Zip-class adaptive UNI1. Author Aziel Eliab.</p>
+  <p class="banner">${LIMITATION}<br>zip: False · method: adaptive UNI1. Verify hashes in the local UI. Run <code>foldlock doctor</code>.</p>
   <div class="card">
     <div class="nums">
       <p class="count">${v}<span>Views</span></p>
@@ -362,7 +363,7 @@ async function indexHtml(env) {
     <p class="meta">Tap <strong>Download</strong> to get the gzip from this Worker (HTTP 200, counted). Tap <strong>One-click install</strong> to copy the one-liner, then paste it in Terminal and press Enter. A sixth-grader can tap it. Forks using this same link are counted automatically.</p>
     <h2>One-click install</h2>
     <pre id="install-line">${INSTALL_LINE}</pre>
-    <p class="iso">Isolated counter: Worker <code>foldlock-download-tracker</code>, project <code>foldlock</code>, KV <code>FOLDLOCK_DOWNLOADS</code>. Not mixed with any other product. /v1 does not increment downloads. Not zip.</p>
+    <p class="iso">Isolated counter: Worker <code>foldlock-download-tracker</code>, project <code>foldlock</code>, KV <code>FOLDLOCK_DOWNLOADS</code>. Not mixed with any other product. /v1 does not increment downloads. Zip-class compression engine, not the ZIP container format.</p>
     <p class="meta">GitHub: stars ${gh.stars || 0} · forks ${gh.forks || 0} · watchers ${gh.watchers || 0} · release assets ${gh.release_download_count || 0}</p>
     <p class="meta">Paper: <a href="${DOI}">doi:10.5281/zenodo.22257762</a> · <a href="${ZENODO}">Zenodo</a> · FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf (this product is FoldLock only) · Apache-2.0 · Eliab, Aziel</p>
     <p class="meta"><a href="/stats">JSON stats</a> · <a href="/openapi.json">OpenAPI</a> · <a href="/v1/skill">Skill</a> · <a href="/ai">AI runtime</a> · <a href="${GITHUB_REPO}">GitHub</a> · <a href="${GITHUB_LATEST}">releases</a></p>

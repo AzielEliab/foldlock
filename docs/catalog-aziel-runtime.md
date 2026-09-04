@@ -7,8 +7,8 @@ This is the exact machine-readable card for **aziel-runtime**
 **azielcorpuslibrary** (Downloadable software). Another agent owns the
 corpus site UI.
 
-Live catalog today still serves the v0.3 banner until aziel-runtime is
-redeployed. FoldLock Worker health/skill/fold-preview/unfold-preview stay
+Live catalog should already lead as SOTA compression software / compression
+engine. FoldLock Worker health/skill/fold-preview/unfold-preview stay
 routed: `/p/foldlock/{op}` → `foldlock-download-tracker.vibelock.workers.dev/v1/{op}`.
 
 ## aziel-runtime `PRODUCTS_RAW` / `/v1/catalog.json` fields
@@ -20,7 +20,7 @@ reorder other products. Do not invent a DOI.
 {
   "slug": "foldlock",
   "name": "FoldLock",
-  "one_line": "Adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip.",
+  "one_line": "SOTA compression engine for UTF-8 text. Zip-class adaptive UNI1.",
   "github": "https://github.com/AzielEliab/foldlock",
   "worker": "foldlock-download-tracker",
   "download": "https://foldlock-download-tracker.vibelock.workers.dev/download",
@@ -29,22 +29,22 @@ reorder other products. Do not invent a DOI.
   "openapi": "https://foldlock-download-tracker.vibelock.workers.dev/openapi.json",
   "doi": "10.5281/zenodo.22257762",
   "doi_url": "https://doi.org/10.5281/zenodo.22257762",
-  "banner": "FoldLock 0.8.0-UNI1 is an adaptive reversible fold on UTF-8 text (classify → bakeoff → passthrough). Tether-word suppression and SIR packs. Not zip. Hosted preview is not a general compressor. Short strings are left alone. Already-compressed files are refused. Ratios and beats_zstd are per-file receipts, not a universal championship. Prose/text is the win lane. Author Aziel Eliab.",
+  "banner": "FoldLock 0.8.0-UNI1 is SOTA compression software and a compression engine — zip-class for UTF-8 text. Adaptive UNI1: classify → bakeoff → passthrough (tether/SIR packs). Prose/text is the win lane. Short strings are left alone. Already-compressed files are refused. Per-file receipts may include ratios and beats_zstd. Hosted preview compresses small text samples. Author Aziel Eliab.",
   "ops": [
     {
       "op": "health",
       "method": "GET",
-      "summary": "Liveness. Does not increment download KV. Not zip."
+      "summary": "Liveness for FoldLock compression engine. Does not increment download KV."
     },
     {
       "op": "fold-preview",
       "method": "POST",
-      "summary": "Small UTF-8 text in, receipt + FLD3/UNI1/passthrough base64 out. Cap ~8KB. Adaptive. Not zip."
+      "summary": "Compress small UTF-8 text → receipt + FLD3/UNI1/passthrough base64. Cap ~8KB. SOTA adaptive UNI1 engine."
     },
     {
       "op": "unfold-preview",
       "method": "POST",
-      "summary": "FLD3/UNI1/passthrough base64 in, verified restore or error. Not zip."
+      "summary": "Decompress FLD3/UNI1/passthrough base64 → verified restore or error."
     },
     {
       "op": "skill",
@@ -61,7 +61,7 @@ reorder other products. Do not invent a DOI.
 
 Honesty line (catalog homepage + OpenAPI `info.description`):
 
-> FoldLock is not zip. 0.8.0-UNI1 adaptive fold (classify → bakeoff → passthrough). Short strings are left alone. Already-compressed files are refused. Ratios and beats_zstd are per-file receipts, not a universal championship. Prose/text is the win lane.
+> FoldLock 0.8.0-UNI1 is SOTA compression software and a compression engine — zip-class for UTF-8 text. Adaptive UNI1: classify → bakeoff → passthrough (tether/SIR packs). Prose/text is the win lane. Short strings are left alone. Already-compressed files are refused. Per-file receipts may include ratios and beats_zstd. Not the ZIP container format.
 
 Source files in aziel-runtime:
 
@@ -82,8 +82,8 @@ software index rewrite. Author Aziel Eliab only.
   "name": "FoldLock",
   "version": "0.8.0-UNI1",
   "author": "Aziel Eliab",
-  "one_line": "Adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip.",
-  "banner": "Classify → bakeoff → passthrough. Short strings are left alone. Already-compressed files are refused. Prose/text is the win lane. Ratios are receipts, not a zstd championship.",
+  "one_line": "SOTA compression engine for UTF-8 text. Zip-class adaptive UNI1.",
+  "banner": "Classify → bakeoff → passthrough. Short strings are left alone. Already-compressed files are refused. Prose/text is the win lane. Ratios are receipts, not a zstd championship. Not the ZIP container format.",
   "github": "https://github.com/AzielEliab/foldlock",
   "download": "https://foldlock-download-tracker.vibelock.workers.dev/download?asset=foldlock-0.8.0.tar.gz",
   "install": "curl -fsSL https://foldlock-download-tracker.vibelock.workers.dev/install.sh | bash",
