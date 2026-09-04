@@ -17,19 +17,25 @@ from typing import Sequence
 
 from foldlock import __version__
 from foldlock.engine import LIMITATION, fold, info, unfold
+from foldlock.uni1 import FoldRefuse
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="foldlock",
-        description="FoldLock v0.3 — algorithmic tether suppression. Not zip.",
+        description="FoldLock v0.8 UNI1 — adaptive tether/SIR fold. Not zip.",
         epilog=LIMITATION,
     )
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    f = sub.add_parser("fold", help="Fold UTF-8 text by tether suppression.")
+    f = sub.add_parser("fold", help="Adaptive fold. Passthrough if it would grow. Refuses compressed.")
     f.add_argument("src")
     f.add_argument("--out")
+    f.add_argument(
+        "--latin-pack",
+        action="store_true",
+        help="Optional Latin peer pack (opcodes restore English; never translate-then-fold).",
+    )
 
     u = sub.add_parser("unfold", help="Restore original bytes. Refuses unless size and SHA-256 match.")
     u.add_argument("src")
@@ -76,7 +82,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.cmd == "fold":
             src = Path(args.src)
             dst = Path(args.out) if args.out else Path(str(src) + ".fld")
-            _print_obj(fold(src, dst))
+            _print_obj(fold(src, dst, latin_pack=bool(getattr(args, "latin_pack", False))))
             return 0
         if args.cmd == "unfold":
             src = Path(args.src)
@@ -91,7 +97,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.cmd == "info":
             _print_obj(info(Path(args.src)))
             return 0
-    except ValueError as e:
+    except (ValueError, FoldRefuse) as e:
         print(f"foldlock: {e}", file=sys.stderr)
         return 1
 

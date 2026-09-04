@@ -25,6 +25,7 @@ from foldlock.engine import (
     unfold_bytes,
     verify_bytes,
 )
+from foldlock.uni1 import FoldRefuse
 
 LOOPBACK = frozenset({"127.0.0.1", "localhost", "::1"})
 WEB = files("foldlock") / "web"
@@ -55,7 +56,7 @@ def _ensure_fold() -> dict:
     folded = _STATE["folded"]
     receipt = _STATE["receipt"]
     if folded is None or receipt is None:
-        folded, receipt = fold_bytes(original)
+        folded, receipt = fold_bytes(original, name=str(_STATE["name"] or "upload.txt"))
         _STATE["folded"] = folded
         _STATE["receipt"] = receipt
     return _snapshot()
@@ -77,15 +78,16 @@ def _snapshot() -> dict:
         except ValueError as exc:
             error = str(exc)
     receipt.setdefault("zip", False)
-    receipt.setdefault("method", "tether-suppression")
+    receipt.setdefault("method", receipt.get("strategy") or "adaptive")
     receipt.setdefault("limitation", LIMITATION)
+    method = receipt.get("method") or "adaptive"
     return {
         "product": "foldlock",
         "version": ENGINE_VERSION,
         "name": _STATE["name"],
         "limitation": LIMITATION,
         "zip": False,
-        "method": "tether-suppression",
+        "method": method,
         "receipt": receipt,
         "info": info,
         "unfold": unfold_meta,
@@ -164,7 +166,7 @@ class Handler(BaseHTTPRequestHandler):
                     "loopback": True,
                     "telemetry": False,
                     "zip": False,
-                    "method": "tether-suppression",
+                    "method": "adaptive",
                     "limitation": LIMITATION,
                 },
             )
@@ -206,7 +208,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/sample":
             _STATE["original"] = VECTORS_TEXT.encode("utf-8")
             _STATE["name"] = "VECTORS.txt"
-            blob, receipt = fold_bytes(_STATE["original"])
+            blob, receipt = fold_bytes(_STATE["original"], name="VECTORS.txt")
             _STATE["folded"] = blob
             _STATE["receipt"] = receipt
             self._json(200, _snapshot())
@@ -229,7 +231,7 @@ class Handler(BaseHTTPRequestHandler):
                     "filename": "foldlock-receipt.json",
                     "limitation": LIMITATION,
                     "zip": False,
-                    "method": "tether-suppression",
+                    "method": snap.get("method") or "adaptive",
                 },
             )
             return
@@ -265,8 +267,8 @@ class Handler(BaseHTTPRequestHandler):
             name = str(payload.get("name") or "typed.txt")
             original = text.encode("utf-8")
             try:
-                blob, receipt = fold_bytes(original)
-            except ValueError as exc:
+                blob, receipt = fold_bytes(original, name=name)
+            except (ValueError, FoldRefuse) as exc:
                 self._json(400, {"error": str(exc), "limitation": LIMITATION, "zip": False})
                 return
             _STATE["original"] = original
@@ -292,8 +294,8 @@ class Handler(BaseHTTPRequestHandler):
                 elif text is not None:
                     data = str(text).encode("utf-8")
             try:
-                blob, receipt = fold_bytes(data)
-            except ValueError as exc:
+                blob, receipt = fold_bytes(data, name=name)
+            except (ValueError, FoldRefuse) as exc:
                 self._json(400, {"error": str(exc), "limitation": LIMITATION, "zip": False})
                 return
             _STATE["original"] = data
@@ -341,7 +343,7 @@ def serve(host: str = "127.0.0.1", port: int = 8872) -> None:
     bound_host, bound_port = httpd.server_address[:2]
     print(
         f"FoldLock UI http://{bound_host}:{bound_port} "
-        "(loopback only; not zip; tether-suppression)"
+        "(loopback only; not zip; UNI1 adaptive)"
     )
     try:
         httpd.serve_forever()

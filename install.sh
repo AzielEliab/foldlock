@@ -4,7 +4,7 @@
 set -euo pipefail
 
 HOST="${FOLDLOCK_HOST:-https://foldlock-download-tracker.vibelock.workers.dev}"
-ASSET="${FOLDLOCK_ASSET:-foldlock-0.3.0.tar.gz}"
+ASSET="${FOLDLOCK_ASSET:-foldlock-0.8.0.tar.gz}"
 WORKDIR="${FOLDLOCK_HOME:-$HOME/foldlock}"
 
 mkdir -p "$WORKDIR"

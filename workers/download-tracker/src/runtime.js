@@ -1,7 +1,10 @@
 import {
   LIMITATION,
+  PAPER,
   PREVIEW_CAP,
+  SPEC,
   TETHERS,
+  VERSION,
   b64decode,
   b64encode,
   foldBytes,
@@ -13,8 +16,6 @@ const EXAMPLE_PAYLOAD = {
   "text": "the cat and the dog"
 };
 
-const VERSION = "0.3.0";
-const SPEC = "foldlock-v0.3";
 const HOST = "https://foldlock-download-tracker.vibelock.workers.dev";
 const CATALOG = "https://aziel-runtime.vibelock.workers.dev";
 const PROTOCOL = "2025-03-26";
@@ -23,22 +24,22 @@ const ZENODO = "https://zenodo.org/records/22257762";
 
 export const SKILL = `---
 name: FoldLock
-description: Use this when folding or unfolding UTF-8 text with FoldLock tether-word suppression (not zip). Hosted preview via /v1. Author Aziel Eliab.
+description: Use this when folding or unfolding UTF-8 text with FoldLock UNI1 adaptive tether/SIR suppression (not zip). Hosted preview via /v1. Author Aziel Eliab.
 ---
 
 # FoldLock
 
-FoldLock pulls common little words (tethers) out of UTF-8 text and puts them back later. It is **not zip**. Magic is FLD3. Lexicon is TETH-1. Author: **Aziel Eliab**.
+FoldLock is an **adaptive** fold for UTF-8 text. It classifies the input, competes allowed strategies (TETH tether-word suppression and SIR densification with peer / abbreviation / number packs), and **passthroughs** if the fold would grow. It is **not zip**. Magics: FLD3 (TETH) and UNI1 (adaptive). Lexicon: TETH-1. Author: **Aziel Eliab**.
 
-Use FoldLock when someone asks to **fold** English-like UTF-8 text, **unfold** a \`.fld\` / FLD3 blob, or check a fold receipt (hits, ratio, hashes). Do **not** use it for zip, gzip, photos, or "make every file smaller."
+Use FoldLock when someone asks to **fold** English-like UTF-8 text, **unfold** a \`.fld\` / FLD3 / UNI1 blob, or check a fold receipt (strategy, hits, ratio, \`beats_zstd\`). Do **not** use it for zip, gzip, photos, or "make every file smaller."
 
 Always send a normal \`User-Agent\` (for example \`Mozilla/5.0\`). Cloudflare Workers may 403 empty agents.
 
 ## When to call it
 
-- Fold a short UTF-8 string and show a receipt (\`zip: false\`, method \`tether-suppression\`, hits, ratio).
-- Unfold an FLD3 blob (base64) and confirm \`verified: true\`.
-- Health / skill / OpenAPI. Never invent a restore. Never claim zip.
+- Fold a UTF-8 string and show a receipt (\`zip: false\`, winning \`strategy\`, hits, ratio). Short strings stay the same size.
+- Unfold an FLD3 / UNI1 / passthrough blob (base64) and confirm \`verified: true\`.
+- Health / skill / OpenAPI. Never invent a restore. Never claim zip. Never claim every file beats zstd.
 
 Hosted preview caps input around 8 KB. Bigger files use the local package: \`foldlock fold\` / \`foldlock unfold\`.
 
@@ -50,8 +51,8 @@ Host: \`https://foldlock-download-tracker.vibelock.workers.dev\`
 |--------|------|------|
 | GET | \`/v1/health\` | Liveness. Does not increment downloads. |
 | GET | \`/v1/skill\` | This markdown. Does not increment downloads. |
-| POST | \`/v1/fold-preview\` | Small UTF-8 text in → receipt + FLD3 base64. Not zip. |
-| POST | \`/v1/unfold-preview\` | FLD3 base64 in → verified restore or error. |
+| POST | \`/v1/fold-preview\` | Small UTF-8 text in → receipt + FLD3/UNI1/passthrough base64. Not zip. |
+| POST | \`/v1/unfold-preview\` | FLD3/UNI1/passthrough base64 in → verified restore or error. |
 
 OpenAPI: \`https://foldlock-download-tracker.vibelock.workers.dev/openapi.json\`
 
@@ -71,7 +72,7 @@ curl -s -A 'Mozilla/5.0' -X POST https://foldlock-download-tracker.vibelock.work
 
 curl -s -A 'Mozilla/5.0' -X POST https://foldlock-download-tracker.vibelock.workers.dev/v1/unfold-preview \\
   -H 'content-type: application/json' \\
-  -d '{"b64":"<FLD3-base64>"}'
+  -d '{"b64":"<FLD3-or-UNI1-or-passthrough-base64>"}'
 \`\`\`
 
 Catalog aliases:
@@ -88,11 +89,13 @@ Grok: import the catalog OpenAPI as a custom tool. ChatGPT: GPT Actions. Venice:
 
 ## Honest banner
 
-THIS IS: reversible tether-word suppression on UTF-8 text; 3-byte opcode per tether; exact restore of letters and bound ASCII spaces.
+THIS IS: adaptive reversible fold on UTF-8 text (UNI1 champion shell); tether-word suppression and SIR with optional packs; exact restore; short strings left alone; already-compressed input refused.
 
-THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks; UL; EmployeeLock; TemporalLock; GodLock; a published bake-off. Ratios are receipts not trophies. Short strings can grow.
+THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks or that FoldLock beats zstd on all files; a universal compressor; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock.
 
-Paper: FL-WP-0.3. The same preprint also describes WhistleLock; this product is FoldLock only.
+Prose/text is the win lane. Code and markup often passthrough. \`beats_zstd\` is per-file when zstd is available.
+
+Method paper: FL-WP-0.3. UNI1 shell: FL-WP-0.8 (no new DOI). The same preprint also describes WhistleLock; this product is FoldLock only.
 
 DOI: https://doi.org/10.5281/zenodo.22257762  
 Record: https://zenodo.org/records/22257762  
@@ -104,7 +107,7 @@ Local UI: Import JSON file and Export JSON. Run foldlock doctor.
 
 ## Catalog + local UI
 
-Author: **Aziel Eliab**. Honest scope: Algorithmic tether-word suppression on UTF-8 text. Not zip.
+Author: **Aziel Eliab**. Honest scope: Adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip.
 
 - Catalog product: https://aziel-runtime.vibelock.workers.dev/p/foldlock/
 - Catalog OpenAPI: https://aziel-runtime.vibelock.workers.dev/openapi.json
@@ -153,7 +156,7 @@ function openapiSpec(origin) {
     info: {
       title: "FoldLock runtime",
       version: VERSION,
-      summary: "Algorithmic tether-word suppression. UTF-8 text fold. Not zip.",
+      summary: "Adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip.",
       description: LIMITATION,
       license: { name: "Apache-2.0", identifier: "Apache-2.0" },
       contact: { name: "Aziel Eliab", url: "https://github.com/AzielEliab/foldlock" },
@@ -178,7 +181,7 @@ function openapiSpec(origin) {
       "/v1/fold-preview": {
         post: {
           operationId: "foldlock_fold-preview",
-          summary: "Small UTF-8 text in, receipt + FLD3 base64 out. Cap ~8KB. Not zip.",
+          summary: "Small UTF-8 text in, receipt + FLD3/UNI1/passthrough base64 out. Cap ~8KB. Not zip.",
           requestBody: {
             required: true,
             content: {
@@ -194,7 +197,7 @@ function openapiSpec(origin) {
       "/v1/unfold-preview": {
         post: {
           operationId: "foldlock_unfold-preview",
-          summary: "FLD3 base64 in, verified restore or error. Not zip.",
+          summary: "FLD3/UNI1/passthrough base64 in, verified restore or error. Not zip.",
           requestBody: {
             required: true,
             content: { "application/json": { schema: { type: "object" } } },
@@ -220,7 +223,7 @@ function aiHtml(origin) {
 <body>
 <h1>FoldLock runtime</h1>
 <p class="banner">${LIMITATION}</p>
-<p>zip: False. Method: tether-suppression. Author Aziel Eliab.</p>
+<p>zip: False. Method: adaptive UNI1. Author Aziel Eliab.</p>
 <p>OpenAPI: <a href="${origin}/openapi.json">${origin}/openapi.json</a></p>
 <p>MCP: POST <code>${origin}/mcp</code> · Catalog: <a href="${CATALOG}/">${CATALOG}</a></p>
 <p>Paper: <a href="${DOI}">${DOI}</a> · <a href="${ZENODO}">Zenodo 22257762</a></p>
@@ -239,12 +242,12 @@ function mcpTools() {
     { name: "foldlock_skill", description: "Return FoldLock skill markdown. Does not increment download KV.", inputSchema: { type: "object" } },
     {
       name: "foldlock_fold-preview",
-      description: "Small UTF-8 text in, receipt + FLD3 base64 out. Not zip. Cap ~8KB.",
+      description: "Small UTF-8 text in, receipt + FLD3/UNI1/passthrough base64 out. Not zip. Cap ~8KB.",
       inputSchema: { type: "object", additionalProperties: true },
     },
     {
       name: "foldlock_unfold-preview",
-      description: "FLD3 base64 in, verified restore or error. Not zip.",
+      description: "FLD3/UNI1/passthrough base64 in, verified restore or error. Not zip.",
       inputSchema: { type: "object", additionalProperties: true },
     },
   ];
@@ -271,7 +274,8 @@ async function foldPreview(body) {
     spec: SPEC,
     kv_increment: false,
     zip: false,
-    method: "tether-suppression",
+    method: receipt.method || "adaptive",
+    strategy: receipt.strategy,
     banner: "not zip",
     limitation: LIMITATION,
     receipt,
@@ -302,7 +306,8 @@ async function unfoldPreview(body) {
     spec: SPEC,
     kv_increment: false,
     zip: false,
-    method: "tether-suppression",
+    method: meta.method || "adaptive",
+    strategy: meta.strategy,
     banner: "not zip",
     limitation: LIMITATION,
     verified: true,
@@ -383,7 +388,8 @@ export async function handleRuntimeApi(request, url) {
       runtime: true,
       kv_increment: false,
       zip: false,
-      method: "tether-suppression",
+      method: "adaptive",
+      paper: PAPER,
       banner: "not zip",
       limitation: LIMITATION,
       catalog: CATALOG,

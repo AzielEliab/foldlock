@@ -16,7 +16,7 @@ import { LIMITATION } from "./codec.js";
  */
 
 const PROJECT = "foldlock";
-const DEFAULT_ASSET = "foldlock-0.3.0.tar.gz";
+const DEFAULT_ASSET = "foldlock-0.8.0.tar.gz";
 const DEFAULT_OWNER = "AzielEliab";
 const DEFAULT_REPO = "foldlock";
 const DEFAULT_BRANCH = "main";

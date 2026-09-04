@@ -8,23 +8,25 @@
 </head>
 <body class="simple">
   <header>
-    <div class="tag">FoldLock · v0.3.0 · loopback · not zip</div>
+    <div class="tag">FoldLock · v0.8.0-UNI1 · loopback · not zip</div>
     <h1>FoldLock</h1>
     <p class="motto">Pull the little words. Put them back. Not zip.</p>
     <p class="lede">
       This tool takes common little words (as, is, has, to, and, or, the…)
       out of a story so the file can get smaller. Unfold puts them back.
-      We check the size and the hash. Short notes can get bigger. That is honest.
+      We check the size and the hash. Short notes are left alone. Photos
+      and zip files are refused. That is honest.
     </p>
   </header>
 
   <aside class="banner limit" role="note">
-    THIS IS: reversible tether-word suppression on UTF-8 text;
-    3-byte opcode per tether; exact restore of letters and bound ASCII spaces.
-    THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks;
-    UL; EmployeeLock; TemporalLock; GodLock; a published bake-off.
-    Ratios are receipts not trophies. Short strings can grow.
-    zip: False · method: tether-suppression
+    THIS IS: adaptive reversible fold on UTF-8 text (UNI1);
+    tether-word suppression and SIR packs; exact restore; short strings left alone.
+    THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks
+    or that FoldLock beats zstd on all files; encryption; UL; EmployeeLock;
+    TemporalLock; GodLock.
+    Prose is the win lane. Ratios are receipts not trophies.
+    zip: False · method: adaptive
   </aside>
 
   <div class="view-toggle" role="group" aria-label="Simple or advanced view">
@@ -39,6 +41,7 @@
     <div class="ok"><span id="c-zip">False</span><label>zip</label></div>
     <div><span id="c-ratio">—</span><label>ratio</label></div>
     <div class="ok"><span id="c-ok">—</span><label>verified</label></div>
+    <div><span id="c-strat">—</span><label>strategy</label></div>
   </section>
 
   <div class="actions simple-actions">
@@ -89,7 +92,7 @@
 
 <footer>
     <p>Apache-2.0 · Aziel Eliab · 2026 · Bound to 127.0.0.1:8872 · Forks welcome and always allowed.</p>
-    <p class="foot-note">Not zip. Not WhistleLock (sibling paper, different product). Paper FL-WP-0.3 · DOI 10.5281/zenodo.22257762</p>
+    <p class="foot-note">Not zip. Not WhistleLock (sibling paper, different product). UNI1 FL-WP-0.8 · method paper FL-WP-0.3 · DOI 10.5281/zenodo.22257762</p>
   </footer>
   <script src="/app.js"></script>
 

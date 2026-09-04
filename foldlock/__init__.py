@@ -1,4 +1,4 @@
-"""FoldLock: algorithmic tether-word suppression. UTF-8 text fold. Not zip.
+"""FoldLock: adaptive tether/SIR fold on UTF-8 text. Not zip.
 
 Author: Aziel Eliab, 2026. Apache-2.0.
 Forks are welcome and always allowed.
@@ -10,6 +10,7 @@ from foldlock.engine import (
     ENGINE_VERSION,
     LIMITATION,
     MAGIC,
+    MAGIC_UNI1,
     PAPER_ID,
     SPEC_STRING,
     TETHERS,
@@ -19,6 +20,7 @@ from foldlock.engine import (
     expand,
     fold,
     fold_bytes,
+    fold_fld3_bytes,
     info,
     info_bytes,
     suppress,
@@ -27,12 +29,13 @@ from foldlock.engine import (
     verify_bytes,
 )
 
-__version__ = "0.3.0"
+__version__ = "0.8.0"
 __author__ = "Aziel Eliab"
 __all__ = [
     "ENGINE_VERSION",
     "LIMITATION",
     "MAGIC",
+    "MAGIC_UNI1",
     "PAPER_ID",
     "SPEC_STRING",
     "TETHERS",
@@ -43,6 +46,7 @@ __all__ = [
     "expand",
     "fold",
     "fold_bytes",
+    "fold_fld3_bytes",
     "info",
     "info_bytes",
     "suppress",

@@ -5,6 +5,9 @@ KV namespace `FOLDLOCK_DOWNLOADS` bound as `DOWNLOADS`.
 Does **not** 302 to GitHub on `/download`. Serves gzip via `ASSETS.fetch`,
 `Cache-Control: private, no-store`.
 
+`/v1` hosts FoldLock 0.8.0-UNI1 preview (classify → bakeoff → passthrough).
+Not zip. Author Aziel Eliab.
+
 GET `/` increments a **page-view** counter (separate from downloads).
 GET `/download` increments **downloads**.
 `/v1` never increments DOWNLOADS KV.

@@ -1,4 +1,4 @@
-"""FoldLock v0.3 codec tests. Paper FL-WP-0.3 / FL-WP-0.3-R."""
+"""FoldLock v0.8 UNI1 codec tests. Paper FL-WP-0.8; TETH-1 from FL-WP-0.3."""
 
 from __future__ import annotations
 
@@ -13,12 +13,15 @@ from foldlock.engine import (
     VECTORS_SHA256,
     VECTORS_TEXT,
     fold_bytes,
+    fold_fld3_bytes,
     info_bytes,
     suppress,
     unfold_bytes,
 )
+from foldlock.uni1 import FoldRefuse
 
 VECTORS_PATH = Path(__file__).resolve().parents[1] / "examples" / "VECTORS.txt"
+PROSE_PATH = Path(__file__).resolve().parents[1] / "examples" / "PROSE.txt"
 
 
 def test_tethers_table() -> None:
@@ -33,8 +36,6 @@ def test_tethers_table() -> None:
 def test_vectors_file_exact() -> None:
     raw = VECTORS_PATH.read_bytes()
     assert raw == VECTORS_TEXT.encode("utf-8")
-    lines = raw.split(b"\n")
-    # four lines plus trailing newline → last empty split piece
     assert raw.decode("utf-8").splitlines() == [
         "the cat and the dog",
         "As is has to and or etc.",
@@ -48,11 +49,12 @@ def test_vectors_file_exact() -> None:
 
 def test_vectors_roundtrip() -> None:
     raw = VECTORS_PATH.read_bytes()
-    blob, receipt = fold_bytes(raw)
+    blob, receipt = fold_bytes(raw, name="VECTORS.txt")
     assert receipt["zip"] is False
-    assert receipt["method"] == "tether-suppression"
     assert receipt["orig_size"] == 63
     assert receipt["orig_sha256"] == VECTORS_SHA256
+    assert receipt["folded_size"] <= len(raw)
+    assert receipt.get("grew") is False
     restored, un = unfold_bytes(blob)
     assert un["verified"] is True
     assert un["zip"] is False
@@ -74,8 +76,14 @@ def test_line_hits() -> None:
 
 def test_refuse_binary() -> None:
     png = b"\x89PNG\r\n\x1a\n" + b"\x00\x01\x02\x03" * 8
-    with pytest.raises(ValueError, match="Binary|UTF-8|zip"):
-        fold_bytes(png)
+    with pytest.raises((ValueError, FoldRefuse), match="Binary|UTF-8|zip|compress|png"):
+        fold_bytes(png, name="x.png")
+
+
+def test_refuse_zip_magic() -> None:
+    zipped = b"PK\x03\x04" + b"hello text payload that is valid utf-8"
+    with pytest.raises((ValueError, FoldRefuse), match="compress|zip"):
+        fold_bytes(zipped, name="x.zip")
 
 
 def test_refuse_fld2() -> None:
@@ -86,20 +94,24 @@ def test_refuse_fld2() -> None:
 
 def test_mixed_case_literal() -> None:
     raw = b"tHe"
-    blob, receipt = fold_bytes(raw)
-    assert receipt["tether_hits"] == 0
+    blob, receipt = fold_bytes(raw, name="mix.txt")
+    assert receipt["folded_size"] <= len(raw)
     restored, un = unfold_bytes(blob)
     assert restored == raw
     assert un["verified"] is True
 
 
-def test_header_magic_fld3() -> None:
-    blob, _ = fold_bytes(b"hello\n")
+def test_fld3_compat_vectors() -> None:
+    raw = VECTORS_PATH.read_bytes()
+    blob, _receipt = fold_fld3_bytes(raw)
     assert blob[:4] == b"FLD3"
     meta = info_bytes(blob)
     assert meta["magic"] == "FLD3"
     assert meta["zip"] is False
-    assert meta["method"] == "tether-suppression"
+    assert meta["tether_hits"] == 13
+    restored, un = unfold_bytes(blob)
+    assert restored == raw
+    assert un["verified"] is True
 
 
 def test_no_zlib_in_engine() -> None:
@@ -107,7 +119,6 @@ def test_no_zlib_in_engine() -> None:
     text = src.read_text(encoding="utf-8")
     assert "import zlib" not in text
     assert "from zlib" not in text
-    assert "gzip" not in text.lower() or "gzip" in "not gzip"
 
 
 def test_identity_not_godlock_az() -> None:
@@ -121,3 +132,4 @@ def test_identity_not_godlock_az() -> None:
         if path.is_file():
             text = path.read_text(encoding="utf-8")
             assert "GodLock.AZ" not in text
+            assert "Collin Horton" not in text

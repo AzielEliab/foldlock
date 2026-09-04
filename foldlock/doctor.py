@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import tempfile
 from pathlib import Path
 from typing import Callable
 
@@ -16,6 +15,7 @@ from foldlock.engine import (
     ENGINE_VERSION,
     LIMITATION,
     MAGIC,
+    MAGIC_UNI1,
     PAPER_ID,
     SPEC_STRING,
     TETHERS,
@@ -24,11 +24,13 @@ from foldlock.engine import (
     VECTORS_SHA256,
     VECTORS_TEXT,
     fold_bytes,
+    fold_fld3_bytes,
     info_bytes,
     suppress,
     unfold_bytes,
 )
 from foldlock.ui import LOOPBACK, make_server
+from foldlock.uni1 import FoldRefuse
 
 Check = tuple[str, bool, str]
 
@@ -42,15 +44,15 @@ def _fail(name: str, detail: str) -> Check:
 
 
 def _check_version() -> Check:
-    if __version__ == ENGINE_VERSION == "0.3.0":
+    if __version__ == ENGINE_VERSION == "0.8.0":
         return _ok("version", __version__)
     return _fail("version", f"{__version__} vs engine {ENGINE_VERSION}")
 
 
 def _check_spec() -> Check:
-    if SPEC_STRING == "foldlock-v0.3" and PAPER_ID == "FL-WP-0.3" and MAGIC == b"FLD3":
-        return _ok("spec", f"{SPEC_STRING} {PAPER_ID} {MAGIC.decode()}")
-    return _fail("spec", f"{SPEC_STRING} {PAPER_ID} {MAGIC!r}")
+    if SPEC_STRING == "foldlock-v0.8-UNI1" and PAPER_ID == "FL-WP-0.8" and MAGIC == b"FLD3" and MAGIC_UNI1 == b"UNI1":
+        return _ok("spec", f"{SPEC_STRING} {PAPER_ID} {MAGIC.decode()}/{MAGIC_UNI1.decode()}")
+    return _fail("spec", f"{SPEC_STRING} {PAPER_ID} {MAGIC!r} {MAGIC_UNI1!r}")
 
 
 def _check_tethers() -> Check:
@@ -71,18 +73,17 @@ def _check_vectors() -> Check:
     digest = hashlib.sha256(raw).hexdigest()
     if digest != VECTORS_SHA256:
         return _fail("vectors sha256", digest)
-    blob, receipt = fold_bytes(raw)
+    blob, receipt = fold_bytes(raw, name="VECTORS.txt")
+    if len(blob) > len(raw):
+        return _fail("vectors no-grow", f"folded {len(blob)} > orig {len(raw)}")
     restored, un = unfold_bytes(blob)
     if restored != raw:
         return _fail("vectors restore", "bytes differ")
     if un.get("verified") is not True or un.get("zip") is not False:
         return _fail("vectors unfold flags", str(un))
-    if receipt.get("zip") is not False or receipt.get("method") != "tether-suppression":
+    if receipt.get("zip") is not False:
         return _fail("vectors fold flags", str(receipt))
-    meta = info_bytes(blob)
-    if meta.get("tether_hits") != 13:
-        return _fail("vectors total hits", str(meta.get("tether_hits")))
-    return _ok("vectors", f"orig_size {len(raw)} verified True zip False")
+    return _ok("vectors", f"orig_size {len(raw)} verified True zip False strategy {receipt.get('strategy')}")
 
 
 def _check_line_hits() -> Check:
@@ -96,16 +97,41 @@ def _check_line_hits() -> Check:
     return _ok("line hits", "3,7,3,0")
 
 
+def _check_short_string() -> Check:
+    raw = b"hi"
+    blob, receipt = fold_bytes(raw, name="hi.txt")
+    if blob != raw or len(blob) > len(raw):
+        return _fail("short string", f"grew or mutated {len(blob)}")
+    if receipt.get("strategy") != "passthrough":
+        return _fail("short string strategy", str(receipt.get("strategy")))
+    restored, un = unfold_bytes(blob)
+    if restored != raw or un.get("verified") is not True:
+        return _fail("short string restore", str(un))
+    return _ok("short string", "passthrough, did not grow")
+
+
 def _check_binary_refused() -> Check:
     png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 16
     try:
-        fold_bytes(png)
-    except ValueError as exc:
+        fold_bytes(png, name="x.png")
+    except (ValueError, FoldRefuse) as exc:
         msg = str(exc).lower()
-        if "binary" in msg or "utf-8" in msg or "zip" in msg:
+        if "binary" in msg or "utf-8" in msg or "zip" in msg or "compress" in msg or "png" in msg:
             return _ok("refuse binary", "PNG-like bytes refused")
         return _fail("refuse binary", str(exc))
     return _fail("refuse binary", "PNG-like bytes were folded")
+
+
+def _check_zip_refused() -> Check:
+    zipped = b"PK\x03\x04" + b"hello text payload"
+    try:
+        fold_bytes(zipped, name="x.zip")
+    except (ValueError, FoldRefuse) as exc:
+        msg = str(exc).lower()
+        if "compress" in msg or "zip" in msg:
+            return _ok("refuse zip", "ZIP magic refused")
+        return _fail("refuse zip", str(exc))
+    return _fail("refuse zip", "ZIP magic was folded")
 
 
 def _check_fld2_refused() -> Check:
@@ -121,15 +147,48 @@ def _check_fld2_refused() -> Check:
 
 def _check_mixed_case() -> Check:
     raw = b"tHe cat"
-    blob, receipt = fold_bytes(raw)
+    blob, receipt = fold_bytes(raw, name="mix.txt")
     restored, _un = unfold_bytes(blob)
     if restored != raw:
         return _fail("mixed case restore", restored.decode("utf-8", "replace"))
-    # mixed tHe must stay literal (not a tether opcode)
+    if receipt.get("strategy") == "passthrough":
+        return _ok("mixed case", "short mix passthrough")
     if receipt["tether_hits"] != 0:
-        # "cat" is not a tether; tHe mixed should not hit. 0 expected.
         return _fail("mixed case hits", str(receipt["tether_hits"]))
     return _ok("mixed case", "tHe stays literal")
+
+
+def _check_fld3_still_unfolds() -> Check:
+    raw = VECTORS_TEXT.encode("utf-8")
+    blob, _receipt = fold_fld3_bytes(raw)
+    if blob[:4] != MAGIC:
+        return _fail("fld3 magic", blob[:4].decode("latin-1", "replace"))
+    restored, un = unfold_bytes(blob)
+    if restored != raw or un.get("verified") is not True:
+        return _fail("fld3 unfold", str(un))
+    meta = info_bytes(blob)
+    if meta.get("tether_hits") != 13:
+        return _fail("fld3 hits", str(meta.get("tether_hits")))
+    return _ok("fld3 compat", "v0.3 FLD3 still unfolds")
+
+
+def _check_prose_shrinks() -> Check:
+    path = Path(__file__).resolve().parents[1] / "examples" / "PROSE.txt"
+    raw = path.read_bytes()
+    blob, receipt = fold_bytes(raw, name="PROSE.txt")
+    restored, un = unfold_bytes(blob)
+    if restored != raw:
+        return _fail("prose restore", "bytes differ")
+    if un.get("verified") is not True:
+        return _fail("prose verified", str(un))
+    if len(blob) >= len(raw):
+        return _fail("prose shrink", f"folded {len(blob)} >= orig {len(raw)} bakeoff={receipt.get('bakeoff')}")
+    if blob[:4] not in {MAGIC, MAGIC_UNI1}:
+        return _fail("prose magic", blob[:4].decode("latin-1", "replace"))
+    return _ok(
+        "prose shrink",
+        f"{receipt.get('strategy')} {len(raw)}→{len(blob)} beats_zstd={receipt.get('beats_zstd')}",
+    )
 
 
 def _check_no_zlib() -> Check:
@@ -137,6 +196,15 @@ def _check_no_zlib() -> Check:
     if "import zlib" in src or "from zlib" in src:
         return _fail("no zlib", "engine imports zlib")
     return _ok("no zlib", "codec is stdlib hashlib/re/struct only")
+
+
+def _check_identity() -> Check:
+    root = Path(__file__).resolve().parents[1]
+    for rel in ("README.md", "AGENTS.md", "SKILL.md"):
+        text = (root / rel).read_text(encoding="utf-8")
+        if "GodLock.AZ" in text or "Collin Horton" in text:
+            return _fail("identity", rel)
+    return _ok("identity", "Aziel Eliab")
 
 
 def _check_loopback() -> Check:
@@ -155,10 +223,15 @@ CHECKS: tuple[Callable[[], Check], ...] = (
     _check_tethers,
     _check_vectors,
     _check_line_hits,
+    _check_short_string,
     _check_binary_refused,
+    _check_zip_refused,
     _check_fld2_refused,
     _check_mixed_case,
+    _check_fld3_still_unfolds,
+    _check_prose_shrinks,
     _check_no_zlib,
+    _check_identity,
     _check_loopback,
 )
 
@@ -182,7 +255,7 @@ def run_doctor(*, as_json: bool = False) -> int:
         "spec": SPEC_STRING,
         "limitation": LIMITATION,
         "zip": False,
-        "method": "tether-suppression",
+        "method": "adaptive",
         "network": False,
         "telemetry": False,
     }

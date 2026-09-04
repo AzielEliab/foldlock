@@ -23,8 +23,8 @@ flutter run
 
 ## Honest scope
 
-THIS IS reversible tether-word suppression on UTF-8 text.
-THIS IS NOT zip. Ratios are receipts. Short strings can grow.
+THIS IS reversible tether-word / UNI1 adaptive fold on UTF-8 text.
+THIS IS NOT zip. Ratios are receipts. Short strings are left alone.
 
 ## Desktop package (counted download)
 

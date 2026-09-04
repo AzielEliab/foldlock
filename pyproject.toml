@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "foldlock"
-version = "0.3.0"
-description = "FoldLock: algorithmic tether-word suppression. UTF-8 text fold. Not zip. Author Aziel Eliab."
+version = "0.8.0"
+description = "FoldLock: adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip. Author Aziel Eliab."
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [{name = "Aziel Eliab"}]
@@ -16,6 +16,7 @@ keywords = [
     "suppression",
     "utf-8",
     "fld3",
+    "uni1",
     "teth-1",
     "not-zip",
 ]
@@ -40,7 +41,7 @@ foldlock = "foldlock.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/AzielEliab/foldlock"
-Download = "https://foldlock-download-tracker.vibelock.workers.dev/download?asset=foldlock-0.3.0.tar.gz"
+Download = "https://foldlock-download-tracker.vibelock.workers.dev/download?asset=foldlock-0.8.0.tar.gz"
 Issues = "https://github.com/AzielEliab/foldlock/issues"
 Counted-downloads = "https://foldlock-download-tracker.vibelock.workers.dev/"
 Paper = "https://doi.org/10.5281/zenodo.22257762"

@@ -224,4 +224,29 @@ Unfold must print `verified: True` and `zip: False`. `cmp` must be silent.
 
 A fork that wraps zlib and keeps the name FoldLock is a zip bundle. It is not this spec.
 
-Aziel Eliab · 2 September 2026
+## 13. UNI1 addendum (FL-WP-0.8)
+
+FoldLock v0.8 adds an adaptive champion shell around this TETH-1 method.
+It does not invent a new Zenodo DOI. The method paper remains FL-WP-0.3.
+
+Normative shell: [uni1.md](uni1.md).
+
+Changes versus v0.3:
+
+- classify → allowlist → bakeoff → passthrough if the fold would grow;
+- short strings are left alone;
+- already-compressed input is refused (not wrapped);
+- optional peer / abbreviation / number packs (SIR) when they shrink
+  and still exact-restore;
+- optional Latin peer pack; never translate-then-fold;
+- body×X×body only if it wins the bakeoff;
+- receipts may record `beats_zstd` per file when zstd-19 is present.
+  That is not a universal championship.
+
+v0.3 FLD3 containers still unfold.
+
+Discarded: 2×2 reticule / glyph rotation / crypto-cosplay. See
+[experiments-reticule.md](experiments-reticule.md).
+
+Aziel Eliab · 2 September 2026 (method) · 4 September 2026 (UNI1 shell)
+

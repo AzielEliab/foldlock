@@ -1,13 +1,14 @@
 # FoldLock
 
-Algorithmic tether-word suppression. UTF-8 text fold. Not zip.
+Adaptive tether-word / SIR fold on UTF-8 text. Not zip.
 
 **Author:** Aziel Eliab
-**Date:** 2 September 2026
+**Date:** 4 September 2026
 **License:** [Apache-2.0](LICENSE)
-**Version:** 0.3.0
-**Spec:** `foldlock-v0.3` · Magic `FLD3` · Lexicon TETH-1 (112 words)
-**Paper:** FL-WP-0.3 — [docs/whitepaper.md](docs/whitepaper.md) · DOI [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762)
+**Version:** 0.8.0-UNI1
+**Spec:** `foldlock-v0.8-UNI1` · Magics `FLD3` / `UNI1` · Lexicon TETH-1 (112 words)
+**Method paper:** FL-WP-0.3 — [docs/whitepaper.md](docs/whitepaper.md) · DOI [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762)
+**UNI1 shell:** FL-WP-0.8 — [docs/uni1.md](docs/uni1.md) (repo spec; no new DOI)
 
 > Pull the tethers. Restore the bytes. Do not ship a zip and call it a fold.
 
@@ -15,9 +16,20 @@ Algorithmic tether-word suppression. UTF-8 text fold. Not zip.
 
 ## Honest scope
 
-**THIS IS:** reversible tether-word suppression on UTF-8 text; 3-byte opcode per tether; exact restore of letters and bound ASCII spaces.
+**THIS IS:** adaptive reversible fold on UTF-8 text (UNI1 champion shell); tether-word suppression (TETH/FLD4) and structural SIR/FLD5 with optional dictionary, abbreviation, number, and peer packs; exact restore of the original bytes; short strings left alone; already-compressed input refused.
 
-**THIS IS NOT:** zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks; UL; EmployeeLock; TemporalLock; GodLock; a published bake-off. Ratios are receipts not trophies. Short strings can grow.
+**THIS IS NOT:** zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks or that FoldLock beats zstd on all files; a universal compressor; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock; a published industry bake-off. Prose/text is the win lane. Code and markup often passthrough. Ratios are receipts not trophies. `beats_zstd` is per-file when zstd is available, never a global championship.
+
+| Input | What FoldLock does |
+|-------|--------------------|
+| Prose / markdown / plain text | Compete SIR + TETH + peer; keep the smallest exact restore |
+| Source code | TETH or passthrough |
+| JSON / HTML / XML | Often leave alone |
+| zip / png / jpg / pdf / zst / … | Refuse |
+| Short strings | Passthrough — they do not grow |
+| Mixed / unknown UTF-8 | Compete; passthrough if nothing shrinks |
+
+v0.3 FLD3 files still unfold. Discarded reticule / glyph-rotation experiment: [docs/experiments-reticule.md](docs/experiments-reticule.md).
 
 ## One-click install
 
@@ -37,15 +49,22 @@ https://foldlock-download-tracker.vibelock.workers.dev/
 
 ```bash
 python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
-python3 foldlock.py fold examples/VECTORS.txt --out /tmp/v.fld
-python3 foldlock.py unfold /tmp/v.fld --out /tmp/v.out
-cmp examples/VECTORS.txt /tmp/v.out
+python3 foldlock.py fold examples/PROSE.txt --out /tmp/p.fld
+python3 foldlock.py unfold /tmp/p.fld --out /tmp/p.out
+cmp examples/PROSE.txt /tmp/p.out
+foldlock doctor
 foldlock ui
 ```
 
 Open http://127.0.0.1:8872 (loopback only). No CDN, no telemetry.
 
-Self-check: `foldlock doctor`.
+`examples/VECTORS.txt` (63 bytes) is left alone (passthrough). Unfold is identity. That is the short-string rule.
+
+Optional Latin peer pack (opcodes restore English; never translate-then-fold):
+
+```bash
+python3 foldlock.py fold examples/PROSE.txt --out /tmp/p.fld --latin-pack
+```
 
 ## Counted download (Cloudflare Worker)
 
@@ -55,7 +74,7 @@ The Worker serves the gzip itself (HTTP 200, no 302 to GitHub).
 # → [https://foldlock-download-tracker.vibelock.workers.dev/](https://foldlock-download-tracker.vibelock.workers.dev/) ←
 
 Direct tarball (also counted):
-[foldlock-0.3.0.tar.gz](https://foldlock-download-tracker.vibelock.workers.dev/download?asset=foldlock-0.3.0.tar.gz)
+[foldlock-0.8.0.tar.gz](https://foldlock-download-tracker.vibelock.workers.dev/download?asset=foldlock-0.8.0.tar.gz)
 
 - Live count JSON: [https://foldlock-download-tracker.vibelock.workers.dev/stats](https://foldlock-download-tracker.vibelock.workers.dev/stats)
 - OpenAPI: [https://foldlock-download-tracker.vibelock.workers.dev/openapi.json](https://foldlock-download-tracker.vibelock.workers.dev/openapi.json)
@@ -67,7 +86,7 @@ Isolated counter: Worker `foldlock-download-tracker`, KV `FOLDLOCK_DOWNLOADS`. N
 ## CLI
 
 ```bash
-python3 foldlock.py fold INFILE [--out OUT.fld]
+python3 foldlock.py fold INFILE [--out OUT.fld] [--latin-pack]
 python3 foldlock.py unfold IN.fld [--out OUTFILE]
 python3 foldlock.py info IN.fld
 foldlock ui
@@ -75,15 +94,17 @@ foldlock doctor
 ```
 
 Unfold prints `verified: True` and `zip: False` when size and SHA-256 match.
-FLD2 (zlib wrapper) is refused. Binary (non-UTF-8) is refused.
+FLD2 (zlib wrapper) is refused. Already-compressed files (png/zip/…) are refused.
+Short strings and no-shrink losers are written as the original bytes (`magic: PASS`).
 
 ## Local UI
 
 `foldlock ui` serves a loopback dashboard at http://127.0.0.1:8872
 
 Simple: **Fold**, **Unfold**, **Verify**. Advanced (tucked away): Info,
-Doctor, Sample vectors, Export receipt, hashes, hits, ratio.
-Shows `zip: False`, method `tether-suppression`. Binds `127.0.0.1` only.
+Doctor, Sample vectors, Export receipt, hashes, hits, ratio, strategy.
+Import JSON / Export JSON. Shows `zip: False` and the winning strategy.
+Binds `127.0.0.1` only.
 
 ## iPhone & Android
 
@@ -104,12 +125,16 @@ The Worker hosts a **stateless** preview API. It does not increment DOWNLOADS.
 
 - `GET /v1/health`
 - `GET /v1/skill` — this repo's [SKILL.md](SKILL.md)
-- `POST /v1/fold-preview` — small UTF-8 text in, receipt + FLD3 base64 out (cap ~8 KB)
-- `POST /v1/unfold-preview` — FLD3 base64 in, verified restore or error
+- `POST /v1/fold-preview` — small UTF-8 text in, receipt + container or passthrough base64 (cap ~8 KB)
+- `POST /v1/unfold-preview` — FLD3 / UNI1 / passthrough base64 in, verified restore or error
 - OpenAPI: `/openapi.json`
 - MCP: this Worker `/mcp` and catalog `https://aziel-runtime.vibelock.workers.dev/mcp`
 
 Banner: not zip.
+
+Catalog card fields to bump on **aziel-runtime** (separate deploy) and the
+Downloadable-software listing hint for azielcorpuslibrary:
+[docs/catalog-aziel-runtime.md](docs/catalog-aziel-runtime.md).
 
 ## AI (Grok, ChatGPT, Venice)
 
@@ -137,13 +162,14 @@ curl -s -A 'Mozilla/5.0' -X POST \
 
 Skill markdown: [SKILL.md](SKILL.md) · live `GET /v1/skill`.
 
-Paper DOI for the method: [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762).
+TETH-1 method DOI: [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762). UNI1 has no new DOI.
 
 ## Papers
 
-See [docs/whitepaper.md](docs/whitepaper.md) (FL-WP-0.3 and FL-WP-0.3-R).
+See [docs/whitepaper.md](docs/whitepaper.md) (FL-WP-0.3 / FL-WP-0.3-R) and
+[docs/uni1.md](docs/uni1.md) (FL-WP-0.8 adaptive shell).
 
-The same preprint also describes **WhistleLock**. **This repository is FoldLock only.** Do not put WhistleLock code here.
+The FL-WP-0.3 preprint also describes **WhistleLock**. **This repository is FoldLock only.** Do not put WhistleLock code here.
 
 - Paper (PDF): [FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf](https://zenodo.org/records/22257762)
 - DOI: [https://doi.org/10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762)
@@ -166,7 +192,7 @@ The same preprint also describes **WhistleLock**. **This repository is FoldLock 
 python -m pytest -q
 ```
 
-VECTORS.txt (four lines, orig_size 63) must unfold with `verified: True` and `zip: False`.
+VECTORS.txt must exact-restore and must not grow. PROSE.txt must shrink and exact-restore. png/zip fixtures must be refused. `foldlock doctor` must pass.
 
 ## Use with Grok / ChatGPT / Venice
 
@@ -186,4 +212,4 @@ Aziel Eliab. FoldLock. https://github.com/AzielEliab/foldlock. https://foldlock-
 - Counted download (gzip HTTP 200, no 302): https://foldlock-download-tracker.vibelock.workers.dev/download
 - GitHub: https://github.com/AzielEliab/foldlock
 - Citation JSON: https://foldlock-download-tracker.vibelock.workers.dev/cite.json
-- DOI: https://doi.org/10.5281/zenodo.22257762
+- DOI (TETH-1 method paper): https://doi.org/10.5281/zenodo.22257762
