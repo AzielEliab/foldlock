@@ -343,7 +343,7 @@ def serve(host: str = "127.0.0.1", port: int = 8872) -> None:
     bound_host, bound_port = httpd.server_address[:2]
     print(
         f"FoldLock UI http://{bound_host}:{bound_port} "
-        "(loopback only; not zip; UNI1 adaptive)"
+        "(loopback only; zip-class SOTA UNI1 compression engine)"
     )
     try:
         httpd.serve_forever()

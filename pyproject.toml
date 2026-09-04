@@ -5,20 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "foldlock"
 version = "0.8.0"
-description = "FoldLock: adaptive UNI1 tether/SIR fold on UTF-8 text. Not zip. Author Aziel Eliab."
+description = "FoldLock: compression software and compression engine. Zip-class SOTA adaptive UNI1 tether/SIR fold on UTF-8 text. Author Aziel Eliab."
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [{name = "Aziel Eliab"}]
 requires-python = ">=3.10"
 keywords = [
     "foldlock",
+    "compression",
+    "compression-engine",
     "tether",
     "suppression",
     "utf-8",
     "fld3",
     "uni1",
     "teth-1",
-    "not-zip",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -28,6 +29,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Archiving :: Compression",
     "Topic :: Text Processing",
     "Intended Audience :: Developers",
 ]

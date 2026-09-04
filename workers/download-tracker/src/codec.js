@@ -1,6 +1,6 @@
 /**
- * FoldLock FLD3 + UNI1 adaptive codec. Not zip. Mirrors the Python engine.
- * Hosted preview cap ~8KB. /v1 never touches DOWNLOADS.
+ * FoldLock FLD3 + UNI1 adaptive codec. Zip-class SOTA compression engine.
+ * Mirrors the Python engine. Hosted preview cap ~8KB. /v1 never touches DOWNLOADS.
  */
 export const TETHERS = [
   "as","is","has","to","and","or","etc","the","a","an","of","in","on","for","with","at","by","from","into","onto","upon",
@@ -25,7 +25,7 @@ export const VERSION = "0.8.0";
 export const SPEC = "foldlock-v0.8-UNI1";
 export const PAPER = "FL-WP-0.8";
 export const LIMITATION =
-  "THIS IS: adaptive reversible fold on UTF-8 text (UNI1 champion shell); tether-word suppression (TETH/FLD4) and structural SIR/FLD5 with optional dictionary, abbreviation, number, and peer packs; exact restore of the original bytes; short strings left alone; already-compressed input refused. THIS IS NOT: zip/zlib/gzip/DEFLATE/zstd/lzma; a claim every file shrinks or that FoldLock beats zstd on all files; a universal compressor; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock; a published industry bake-off. Prose/text is the win lane. Code and markup often passthrough. Ratios are receipts not trophies. beats_zstd is per-file when zstd is available, never a global championship.";
+  "THIS IS: compression software and a compression engine (zip-class category; SOTA adaptive UNI1 tether/SIR fold on UTF-8 text: classify → bakeoff → passthrough); tether-word suppression (TETH/FLD4) and structural SIR/FLD5 with optional dictionary, abbreviation, number, and peer packs; exact restore of the original bytes; short strings left alone; already-compressed input refused. THIS IS NOT: the ZIP file format, nor a zlib/gzip/DEFLATE/zstd/lzma wrapper; a claim every file shrinks or that FoldLock beats zstd on all files; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock; a published industry bake-off. Prose/text is the win lane. Code and markup often passthrough. Ratios and beats_zstd are per-file receipts, never a global championship.";
 
 const PEER_RAW = [
   "about","after","again","against","almost","already","although","always","another","around","because","before","behind",

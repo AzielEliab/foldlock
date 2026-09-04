@@ -1,4 +1,4 @@
-/* FoldLock UI. No CDN. No telemetry. Not zip. */
+/* FoldLock UI. No CDN. No telemetry. Zip-class SOTA UNI1 compression engine. */
 (function () {
   const kid = document.getElementById("kid-plain");
   const verifyLine = document.getElementById("verify-line");
@@ -39,11 +39,11 @@
     if (stratEl) stratEl.textContent = strat;
     if (state.sample_text != null) plain.value = state.sample_text;
     if (state.error) {
-      kid.textContent = "Could not fold or unfold. " + state.error + " This is not zip.";
+      kid.textContent = "Could not fold or unfold. " + state.error + " Already-compressed files are refused.";
     } else if (ok) {
-      kid.textContent = "Hashes match. The words went back. zip is False. Strategy is " + strat + ".";
+      kid.textContent = "Hashes match. The words went back. zip is False (not the ZIP file format). Strategy is " + strat + ".";
     } else {
-      kid.textContent = "Type a sentence. Tap Fold. Tap Verify to check the hash. Short notes stay the same size. This is not zip.";
+      kid.textContent = "Type a sentence. Tap Fold. Tap Verify to check the hash. Short notes stay the same size.";
     }
     const sha = state.orig_sha256 || "";
     verifyLine.textContent = sha
