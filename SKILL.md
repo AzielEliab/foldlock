@@ -61,7 +61,9 @@ curl -s -A 'Mozilla/5.0' -X POST https://aziel-runtime.vibelock.workers.dev/p/fo
 
 MCP tools: `foldlock_health`, `foldlock_fold-preview`, `foldlock_unfold-preview`, `foldlock_skill`.
 
-Grok: import the catalog OpenAPI as a custom tool. ChatGPT: GPT Actions. Venice: HTTP tools.
+Works with ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Cursor (MCP), Glama (MCP), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other MCP/OpenAPI-capable assistants.
+
+OpenAPI import (no auth): catalog or this Worker `/openapi.json` — ChatGPT GPT Actions, Grok custom tool, Venice HTTP tools, and any client that accepts an OpenAPI spec. MCP: Cursor, Glama, and other MCP clients — `POST` the catalog or Worker `/mcp`. Always send `User-Agent: Mozilla/5.0`.
 
 ## Honest banner
 
