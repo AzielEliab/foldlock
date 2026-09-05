@@ -85,7 +85,9 @@ curl -s -A 'Mozilla/5.0' -X POST https://aziel-runtime.vibelock.workers.dev/p/fo
 
 MCP tools: \`foldlock_health\`, \`foldlock_fold-preview\`, \`foldlock_unfold-preview\`, \`foldlock_skill\`.
 
-Grok: import the catalog OpenAPI as a custom tool. ChatGPT: GPT Actions. Venice: HTTP tools.
+Works with ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Cursor (MCP), Glama (MCP), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other MCP/OpenAPI-capable assistants.
+
+OpenAPI import (no auth): catalog or this Worker \`/openapi.json\` — ChatGPT GPT Actions, Grok custom tool, Venice HTTP tools, and any client that accepts an OpenAPI spec. MCP: Cursor, Glama, and other MCP clients — \`POST\` the catalog or Worker \`/mcp\`. Always send \`User-Agent: Mozilla/5.0\`.
 
 ## Honest banner
 
@@ -118,7 +120,7 @@ Author: **Aziel Eliab**. Honest scope: zip-class SOTA adaptive UNI1 compression 
 
 Local UI: Import JSON file (type=file) and Export JSON. Then foldlock doctor.
 
-Grok: import catalog or Worker OpenAPI as a custom tool. ChatGPT: GPT Actions. Venice: HTTP tools.
+Works with ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Cursor (MCP), Glama (MCP), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other MCP/OpenAPI-capable assistants. OpenAPI import (no auth): catalog or Worker OpenAPI. MCP: Cursor, Glama, and other MCP clients.
 `;
 
 function corsHeaders() {
@@ -224,8 +226,8 @@ function aiHtml(origin) {
 <h1>FoldLock runtime</h1>
 <p class="banner">${LIMITATION}</p>
 <p>Compression engine · zip-class SOTA adaptive UNI1. Author Aziel Eliab. Receipt zip: False (not the ZIP file format).</p>
-<p>OpenAPI: <a href="${origin}/openapi.json">${origin}/openapi.json</a></p>
-<p>MCP: POST <code>${origin}/mcp</code> · Catalog: <a href="${CATALOG}/">${CATALOG}</a></p>
+<p>Works with ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Cursor (MCP), Glama (MCP), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other MCP/OpenAPI-capable assistants.</p>
+<p>OpenAPI: <a href="${origin}/openapi.json">${origin}/openapi.json</a> (ChatGPT GPT Actions, Grok custom tool, Venice HTTP tools, or any OpenAPI import). MCP: POST <code>${origin}/mcp</code> (Cursor, Glama, and other MCP clients) · Catalog: <a href="${CATALOG}/">${CATALOG}</a></p>
 <p>Paper: <a href="${DOI}">${DOI}</a> · <a href="${ZENODO}">Zenodo 22257762</a></p>
 <pre>curl -A Mozilla/5.0 ${origin}/v1/health
 curl -A Mozilla/5.0 ${origin}/v1/skill

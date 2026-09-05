@@ -136,20 +136,21 @@ Catalog card fields to bump on **aziel-runtime** (separate deploy) and the
 Downloadable-software listing hint for azielcorpuslibrary:
 [docs/catalog-aziel-runtime.md](docs/catalog-aziel-runtime.md).
 
-## AI (Grok, ChatGPT, Venice)
+## Use with AI assistants
+
+Works with OpenAPI- and MCP-capable assistants, including **ChatGPT (GPT Actions / OpenAI)**, **Grok (xAI)**, **Venice**, **Claude (Anthropic)**, **Cursor (MCP)**, **Glama (MCP)**, **Perplexity**, **Microsoft Copilot / Bing**, **Google Gemini / Vertex**, **Mistral**, **Meta AI**, **Apple Intelligence surfaces**, **Amazon Q tooling**, **DuckAssist**, **You.com**, **Cohere**, and other MCP/OpenAPI-capable assistants.
 
 Always send `User-Agent: Mozilla/5.0`. Empty agents can 403.
 
-**ChatGPT** — GPT Actions → Import from URL →
+**OpenAPI (no auth)** — Import from URL:
 `https://aziel-runtime.vibelock.workers.dev/openapi.json`
 (or this Worker's `https://foldlock-download-tracker.vibelock.workers.dev/openapi.json`).
+ChatGPT: GPT Actions → Import from URL. Grok: custom tool / OpenAPI. Venice: custom HTTP tools. Claude, Gemini, Copilot, Perplexity, Mistral, Meta AI, Cohere, and others: the same OpenAPI URL where the client accepts a spec.
 
-**Grok** — custom tool / OpenAPI: same catalog URL.
-MCP remote: `POST https://aziel-runtime.vibelock.workers.dev/mcp`
+**MCP** — Cursor, Glama, and other MCP clients:
+`POST https://aziel-runtime.vibelock.workers.dev/mcp`
 (or `POST https://foldlock-download-tracker.vibelock.workers.dev/mcp`).
 Tools: `foldlock_health`, `foldlock_fold-preview`, `foldlock_unfold-preview`, `foldlock_skill`.
-
-**Venice** — custom HTTP tools / OpenAPI: same catalog OpenAPI.
 
 Example:
 
@@ -194,14 +195,14 @@ python -m pytest -q
 
 VECTORS.txt must exact-restore and must not grow. PROSE.txt must shrink and exact-restore. png/zip fixtures must be refused. `foldlock doctor` must pass.
 
-## Use with Grok / ChatGPT / Venice
+## Use with AI assistants
 
 Catalog OpenAPI: https://aziel-runtime.vibelock.workers.dev/openapi.json
 Catalog MCP: `POST https://aziel-runtime.vibelock.workers.dev/mcp`
 This Worker skill: https://foldlock-download-tracker.vibelock.workers.dev/v1/skill
 This Worker OpenAPI: https://foldlock-download-tracker.vibelock.workers.dev/openapi.json
 
-Grok: import the catalog or Worker OpenAPI as a custom tool. ChatGPT: GPT Actions (no auth). Venice: HTTP tools. Always send `User-Agent: Mozilla/5.0`.
+Import the catalog or Worker OpenAPI (no auth) in ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other OpenAPI-capable assistants. Add the MCP endpoint in Cursor, Glama, and other MCP clients. Always send `User-Agent: Mozilla/5.0`.
 
 ## Cite this
 
