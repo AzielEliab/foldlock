@@ -26,7 +26,10 @@ the dev extra. No network. No ML. No zlib for the fold.
 5. **Do not mix the download tracker** with any other product's Worker or KV. Namespace `FOLDLOCK_DOWNLOADS` only.
 6. **Public identity is Aziel Eliab only.** GodLock may appear only as a sibling product name in the mesh table.
 7. This repo is FoldLock only. WhistleLock is a sibling; same preprint, different tree.
-8. New behavior needs a test that fails without the change.
+8. **Door vs local op.** `/v1/mesh/*` PROXY to aziel-runtime. Local ops are `/v1/{op}` only.
+   Suite mesh default OFF; QNM rollup live|locked|isolated; no Node Gate;
+   no auto-heal; not anonymity.
+9. New behavior needs a test that fails without the change.
 
 ## Where to change things
 
@@ -39,6 +42,7 @@ the dev extra. No network. No ML. No zlib for the fold.
 - Catalog bump (aziel-runtime + corpus listing hint): `docs/catalog-aziel-runtime.md`
 - Flutter: `mobile/`
 - Isolated counter: `workers/download-tracker/`
+- Suite mesh / QNM Live Nodes: `workers/download-tracker/src/mesh.js` (`/v1/mesh/*` PROXY to aziel-runtime).
 
 ## License of contributions
 
