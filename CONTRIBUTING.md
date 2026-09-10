@@ -27,7 +27,9 @@ the dev extra. No network. No ML. No zlib for the fold.
 6. **Public identity is Aziel Eliab only.** GodLock may appear only as a sibling product name in the mesh table.
 7. This repo is FoldLock only. WhistleLock is a sibling; same preprint, different tree.
 8. **Door vs local op.** `/v1/mesh/*` PROXY to aziel-runtime. Local ops are `/v1/{op}` only.
-   Suite mesh default OFF; QNM rollup live|locked|isolated; no Node Gate;
+   Suite mesh default OFF; QNM rollup live|locked|isolated; QNS-CD-1.0
+   photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only
+   (no public qnsd proxy; not a Softwares-tab product); no Node Gate;
    no auto-heal; not anonymity.
 9. New behavior needs a test that fails without the change.
 
@@ -42,7 +44,7 @@ the dev extra. No network. No ML. No zlib for the fold.
 - Catalog bump (aziel-runtime + corpus listing hint): `docs/catalog-aziel-runtime.md`
 - Flutter: `mobile/`
 - Isolated counter: `workers/download-tracker/`
-- Suite mesh / QNM Live Nodes: `workers/download-tracker/src/mesh.js` (`/v1/mesh/*` PROXY to aziel-runtime).
+- Suite mesh / QNM Live Nodes + QNS-CD-1.0 cross-map: `workers/download-tracker/src/mesh.js` (`/v1/mesh/*` PROXY to aziel-runtime; no public qnsd proxy).
 
 ## License of contributions
 

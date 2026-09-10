@@ -29,7 +29,7 @@ const ZENODO = "https://zenodo.org/records/22257762";
 
 export const SKILL = `---
 name: FoldLock
-description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. This Worker /v1/mesh/* PROXY to aziel-runtime via AZIEL_RUNTIME. Suite mesh default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.
+description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. This Worker /v1/mesh/* PROXY to aziel-runtime via AZIEL_RUNTIME. Suite mesh default OFF. QNM-BUILD-1.0 live|locked|isolated. QNS-CD-1.0 photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only (local qnsd in qnm-node; no public qnsd proxy; not a Softwares-tab product). No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.
 ---
 
 # FoldLock
@@ -56,8 +56,8 @@ Host: \`https://foldlock-download-tracker.vibelock.workers.dev\`
 |--------|------|------|
 | GET | \`/v1/health\` | Liveness. Does not increment downloads. |
 | GET | \`/v1/skill\` | This markdown. Does not increment downloads. |
-| GET | \`/v1/mesh\` | PROXY suite mesh status. Default OFF. QNM live\\|locked\\|isolated. Never enables. |
-| GET | \`/v1/mesh/nodes\` | PROXY Live Nodes roster (5-minute presence). |
+| GET | \`/v1/mesh\` | PROXY suite mesh status. Default OFF. QNM live\\|locked\\|isolated. QNS-CD-1.0 cross-map. Never enables. |
+| GET | \`/v1/mesh/nodes\` | PROXY Live Nodes roster (5-minute presence). QNS-CD-1.0 cross-map. |
 | POST | \`/v1/mesh/{enable,disable,join,heartbeat,leave,broadcast}\` | PROXY. Bearer required to enable. No auto-heal. Anon-broadcast is not a publish path. |
 | POST | \`/v1/fold-preview\` | Small UTF-8 text in → receipt + FLD3/UNI1/passthrough base64. SOTA adaptive UNI1. |
 | POST | \`/v1/unfold-preview\` | FLD3/UNI1/passthrough base64 in → verified restore or error. |
@@ -125,7 +125,7 @@ Author: **Aziel Eliab**. Honest scope: zip-class SOTA adaptive UNI1 compression 
 - Catalog MCP: POST https://aziel-runtime.vibelock.workers.dev/mcp
 - This Worker skill: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/skill
 - This Worker OpenAPI: https://foldlock-download-tracker.vibelock.workers.dev/openapi.json
-- This Worker mesh: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh (PROXY; default OFF; QNM-BUILD-1.0)
+- This Worker mesh: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh (PROXY; default OFF; QNM-BUILD-1.0; QNS-CD-1.0 cross-map — local qnsd in qnm-node; no public qnsd proxy)
 - Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example
 
 Local UI: Import JSON file (type=file) and Export JSON. Then foldlock doctor.
@@ -169,7 +169,7 @@ function openapiSpec(origin) {
       title: "FoldLock runtime",
       version: VERSION,
       summary: "Zip-class SOTA adaptive UNI1 compression engine on UTF-8 text.",
-      description: LIMITATION + " Suite mesh /v1/mesh/* PROXY to aziel-runtime (AZIEL_RUNTIME). Default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Aziel Eliab only.",
+      description: LIMITATION + " Suite mesh /v1/mesh/* PROXY to aziel-runtime (AZIEL_RUNTIME). Default OFF. QNM-BUILD-1.0 live|locked|isolated. QNS-CD-1.0 photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only (local qnsd in qnm-node; no public qnsd proxy; not a Softwares-tab product). No Node Gate. No auto-heal. Not anonymity. Aziel Eliab only.",
       license: { name: "Apache-2.0", identifier: "Apache-2.0" },
       contact: { name: "Aziel Eliab", url: "https://github.com/AzielEliab/foldlock" },
     },
@@ -239,7 +239,7 @@ function aiHtml(origin) {
 <p>Compression engine · zip-class SOTA adaptive UNI1. Author Aziel Eliab. Receipt zip: False (not the ZIP file format).</p>
 <p>Works with ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Cursor (MCP), Glama (MCP), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other MCP/OpenAPI-capable assistants.</p>
 <p>OpenAPI: <a href="${origin}/openapi.json">${origin}/openapi.json</a> (ChatGPT GPT Actions, Grok custom tool, Venice HTTP tools, or any OpenAPI import). MCP: POST <code>${origin}/mcp</code> (Cursor, Glama, and other MCP clients) · Catalog: <a href="${CATALOG}/">${CATALOG}</a> (catalog <code>mesh_*</code> + FragGate <code>slug=mesh</code>)</p>
-<p>Suite mesh: <a href="${origin}/v1/mesh">${origin}/v1/mesh</a> PROXY to aziel-runtime. Default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author: Aziel Eliab only.</p>
+<p>Suite mesh: <a href="${origin}/v1/mesh">${origin}/v1/mesh</a> PROXY to aziel-runtime. Default OFF. QNM-BUILD-1.0 live|locked|isolated. QNS-CD-1.0 photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only (local qnsd in qnm-node; no public qnsd proxy; not a Softwares-tab product). No Node Gate. No auto-heal. Not anonymity. Author: Aziel Eliab only.</p>
 <p>Paper: <a href="${DOI}">${DOI}</a> · <a href="${ZENODO}">Zenodo 22257762</a></p>
 <pre>curl -A Mozilla/5.0 ${origin}/v1/health
 curl -A Mozilla/5.0 ${origin}/v1/skill

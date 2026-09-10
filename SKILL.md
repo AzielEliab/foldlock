@@ -1,6 +1,6 @@
 ---
 name: FoldLock
-description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. This Worker /v1/mesh/* PROXY to aziel-runtime via AZIEL_RUNTIME. Suite mesh default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.
+description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. This Worker /v1/mesh/* PROXY to aziel-runtime via AZIEL_RUNTIME. Suite mesh default OFF. QNM-BUILD-1.0 live|locked|isolated. QNS-CD-1.0 photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only (local qnsd in qnm-node; no public qnsd proxy; not a Softwares-tab product). No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.
 ---
 
 # FoldLock
@@ -27,8 +27,8 @@ Host: `https://foldlock-download-tracker.vibelock.workers.dev`
 |--------|------|------|
 | GET | `/v1/health` | Liveness. Does not increment downloads. |
 | GET | `/v1/skill` | This markdown. Does not increment downloads. |
-| GET | `/v1/mesh` | PROXY suite mesh status. Default OFF. QNM live\|locked\|isolated. Never enables. |
-| GET | `/v1/mesh/nodes` | PROXY Live Nodes roster (5-minute presence). |
+| GET | `/v1/mesh` | PROXY suite mesh status. Default OFF. QNM live\|locked\|isolated. QNS-CD-1.0 cross-map. Never enables. |
+| GET | `/v1/mesh/nodes` | PROXY Live Nodes roster (5-minute presence). QNS-CD-1.0 cross-map. |
 | POST | `/v1/mesh/{enable,disable,join,heartbeat,leave,broadcast}` | PROXY. Bearer required to enable. No auto-heal. Anon-broadcast is not a publish path. |
 | POST | `/v1/fold-preview` | Small UTF-8 text in → receipt + FLD3/UNI1/passthrough base64. SOTA adaptive UNI1. |
 | POST | `/v1/unfold-preview` | FLD3/UNI1/passthrough base64 in → verified restore or error. |
@@ -87,4 +87,4 @@ Forks are welcome and always allowed.
 
 Local UI: Import JSON file and Export JSON. Run `foldlock doctor`. Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example
 
-Worker homepage Live Nodes strip polls `GET /v1/mesh` (default OFF). Suite mesh `/v1/mesh/*` PROXY via `AZIEL_RUNTIME`. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.
+Worker homepage Live Nodes strip polls `GET /v1/mesh` (default OFF). Suite mesh `/v1/mesh/*` PROXY via `AZIEL_RUNTIME`. QNM-BUILD-1.0 live|locked|isolated. QNS-CD-1.0 photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only (local qnsd in [qnm-node](https://github.com/AzielEliab/qnm-node); runtime cites + catalog field in [aziel-runtime](https://github.com/AzielEliab/aziel-runtime); pair custody in [AZInterface](https://github.com/AzielEliab/azinterface)). Not a Softwares-tab product. No public qnsd proxy. No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.

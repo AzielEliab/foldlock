@@ -79,7 +79,7 @@ Direct tarball (also counted):
 - Live count JSON: [https://foldlock-download-tracker.vibelock.workers.dev/stats](https://foldlock-download-tracker.vibelock.workers.dev/stats)
 - OpenAPI: [https://foldlock-download-tracker.vibelock.workers.dev/openapi.json](https://foldlock-download-tracker.vibelock.workers.dev/openapi.json)
 - Skill: [https://foldlock-download-tracker.vibelock.workers.dev/v1/skill](https://foldlock-download-tracker.vibelock.workers.dev/v1/skill)
-- Suite mesh proxy: [https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh](https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh) — default OFF; QNM live / locked / isolated
+- Suite mesh proxy: [https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh](https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh) — default OFF; QNM live / locked / isolated; QNS-CD-1.0 photon QNS1 packet transfer (hub cite / Worker mesh cross-map only; no public qnsd proxy)
 - GitHub: [https://github.com/AzielEliab/foldlock](https://github.com/AzielEliab/foldlock)
 
 Isolated counter: Worker `foldlock-download-tracker`, KV `FOLDLOCK_DOWNLOADS`. Not mixed with any other product. `/v1` does not increment downloads.
@@ -126,11 +126,11 @@ The Worker hosts a **stateless** preview API. It does not increment DOWNLOADS.
 
 - `GET /v1/health`
 - `GET /v1/skill` — this repo's [SKILL.md](SKILL.md)
-- `GET /v1/mesh` — PROXY suite mesh status (default OFF; QNM-BUILD-1.0 live|locked|isolated)
+- `GET /v1/mesh` — PROXY suite mesh status (default OFF; QNM-BUILD-1.0 live|locked|isolated; QNS-CD-1.0 cross-map)
 - `POST /v1/fold-preview` — small UTF-8 text in, receipt + container or passthrough base64 (cap ~8 KB)
 - `POST /v1/unfold-preview` — FLD3 / UNI1 / passthrough base64 in, verified restore or error
 - OpenAPI: `/openapi.json`
-- MCP: this Worker `/mcp` and catalog `https://aziel-runtime.vibelock.workers.dev/mcp`. Suite mesh `/v1/mesh/*` PROXY via `AZIEL_RUNTIME` (default OFF; QNM-BUILD-1.0 live|locked|isolated; no Node Gate). Catalog MCP `mesh_*` + FragGate `slug=mesh`.
+- MCP: this Worker `/mcp` and catalog `https://aziel-runtime.vibelock.workers.dev/mcp`. Suite mesh `/v1/mesh/*` PROXY via `AZIEL_RUNTIME` (default OFF; QNM-BUILD-1.0 live|locked|isolated; QNS-CD-1.0 photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only — local qnsd in [qnm-node](https://github.com/AzielEliab/qnm-node), runtime cites + catalog field in [aziel-runtime](https://github.com/AzielEliab/aziel-runtime), pair custody in [AZInterface](https://github.com/AzielEliab/azinterface); no public qnsd proxy; not a Softwares-tab product; no Node Gate). Catalog MCP `mesh_*` + FragGate `slug=mesh`.
 
 Banner: SOTA adaptive UNI1 compression engine. Not the ZIP file format.
 
