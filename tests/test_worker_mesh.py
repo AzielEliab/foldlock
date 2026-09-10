@@ -1,6 +1,7 @@
-"""Suite mesh Live Nodes + QNM-BUILD-1.0 contract.
+"""Suite mesh Live Nodes + QNM-BUILD-1.0 contract + QNS-CD-1.0 cross-map.
 
 Default OFF. live|locked|isolated. No Node Gate. No auto-heal. Not anonymity.
+QNS-CD-1.0 is a hub cite / Worker mesh cross-map only. No public qnsd proxy.
 """
 
 from __future__ import annotations
@@ -31,6 +32,28 @@ def test_mesh_contract_default_off_qnm_law() -> None:
     assert "anon_broadcast_publish_path: false" in MESH
     assert "Aziel Eliab" in MESH
     assert 'code: extra.code || "MESH-OK"' in MESH or '"MESH-OK"' in MESH
+
+
+def test_qns_cd_cross_map() -> None:
+    assert 'QNS_CD_SPEC = "QNS-CD-1.0"' in MESH
+    assert "export const QNS_CD" in MESH
+    assert "photon QNS1 packet transfer" in MESH
+    assert "https://github.com/AzielEliab/qnm-node" in MESH
+    assert "https://github.com/AzielEliab/aziel-runtime" in MESH
+    assert "https://github.com/AzielEliab/azinterface" in MESH
+    assert "public_proxy: false" in MESH
+    assert "softwares_tab: false" in MESH
+    assert "qnsd_host: false" in MESH
+    assert "pair_custody: \"azinterface\"" in MESH or "pair_custody: 'azinterface'" in MESH
+    assert "QNS-CD-1.0" in MESH
+    assert "export function attachQnsCd" in MESH
+    assert "attachQnsCd(result.data)" in MESH
+    assert "qns_cd_spec: QNS_CD_SPEC" in MESH
+    assert "qns_cd: QNS_CD" in MESH
+    assert "MESH_DEFAULT_OFF = true" in MESH
+    assert "No public qnsd" in MESH or "no public qnsd proxy" in MESH.lower()
+    assert "/v1/qnsd" not in MESH
+    assert "/v1/qns" not in MESH
 
 
 def test_mesh_pointer_and_openapi_helpers() -> None:
@@ -86,6 +109,7 @@ def test_home_live_nodes_strip_no_node_gate() -> None:
     assert 'id="meshLine"' in INDEX
     assert "Live Nodes" in INDEX
     assert "QNM-BUILD-1.0" in INDEX
+    assert "QNS-CD-1.0" in INDEX
     assert "No Node Gate" in INDEX
     assert "No auto-heal" in INDEX
     assert "Not an anonymity network" in INDEX
@@ -99,6 +123,10 @@ def test_home_live_nodes_strip_no_node_gate() -> None:
 def test_docs_advertise_mesh_proxy() -> None:
     assert "/v1/mesh" in README
     assert "/v1/mesh" in SKILL
+    assert "QNS-CD-1.0" in README
+    assert "QNS-CD-1.0" in SKILL
+    assert "QNS-CD-1.0" in WORKER_README
+    assert "QNS-CD-1.0" in RUNTIME
     assert "QNM-BUILD-1.0" in WORKER_README
     assert "AZIEL_RUNTIME" in WORKER_README
     assert "Live Nodes" in WORKER_README
