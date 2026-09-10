@@ -1,3 +1,7 @@
+/**
+ * FoldLock hosted /v1.
+ * /v1/mesh/* PROXY to aziel-runtime via AZIEL_RUNTIME (handled in index.js before this catch-all).
+ */
 import {
   LIMITATION,
   PAPER,
@@ -10,6 +14,7 @@ import {
   foldBytes,
   unfoldBytes,
 } from "./codec.js";
+import { meshOpenApiPaths, meshPointer } from "./mesh.js";
 
 const PRODUCT = "foldlock";
 const EXAMPLE_PAYLOAD = {
@@ -24,7 +29,7 @@ const ZENODO = "https://zenodo.org/records/22257762";
 
 export const SKILL = `---
 name: FoldLock
-description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. Author Aziel Eliab.
+description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. This Worker /v1/mesh/* PROXY to aziel-runtime via AZIEL_RUNTIME. Suite mesh default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.
 ---
 
 # FoldLock
@@ -51,6 +56,9 @@ Host: \`https://foldlock-download-tracker.vibelock.workers.dev\`
 |--------|------|------|
 | GET | \`/v1/health\` | Liveness. Does not increment downloads. |
 | GET | \`/v1/skill\` | This markdown. Does not increment downloads. |
+| GET | \`/v1/mesh\` | PROXY suite mesh status. Default OFF. QNM live\\|locked\\|isolated. Never enables. |
+| GET | \`/v1/mesh/nodes\` | PROXY Live Nodes roster (5-minute presence). |
+| POST | \`/v1/mesh/{enable,disable,join,heartbeat,leave,broadcast}\` | PROXY. Bearer required to enable. No auto-heal. Anon-broadcast is not a publish path. |
 | POST | \`/v1/fold-preview\` | Small UTF-8 text in → receipt + FLD3/UNI1/passthrough base64. SOTA adaptive UNI1. |
 | POST | \`/v1/unfold-preview\` | FLD3/UNI1/passthrough base64 in → verified restore or error. |
 
@@ -65,6 +73,7 @@ also \`POST https://aziel-runtime.vibelock.workers.dev/mcp\`
 
 \`\`\`bash
 curl -s -A 'Mozilla/5.0' https://foldlock-download-tracker.vibelock.workers.dev/v1/health
+curl -s -A 'Mozilla/5.0' https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh
 
 curl -s -A 'Mozilla/5.0' -X POST https://foldlock-download-tracker.vibelock.workers.dev/v1/fold-preview \\
   -H 'content-type: application/json' \\
@@ -93,7 +102,7 @@ OpenAPI import (no auth): catalog or this Worker \`/openapi.json\` — ChatGPT G
 
 THIS IS: compression software and a compression engine (zip-class category; SOTA adaptive UNI1 tether/SIR fold on UTF-8 text: classify → bakeoff → passthrough); tether-word suppression and SIR with optional packs; exact restore; short strings left alone; already-compressed input refused.
 
-THIS IS NOT: the ZIP file format, nor a zlib/gzip/DEFLATE/zstd/lzma wrapper; a claim every file shrinks or that FoldLock beats zstd on all files; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock.
+THIS IS NOT: the ZIP file format, nor a zlib/gzip/DEFLATE/zstd/lzma wrapper; a claim every file shrinks or that FoldLock beats zstd on all files; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock; a Node Gate; an anonymity network; AnonBroadcast.
 
 Prose/text is the win lane. Code and markup often passthrough. \`beats_zstd\` is per-file when zstd is available.
 
@@ -116,6 +125,7 @@ Author: **Aziel Eliab**. Honest scope: zip-class SOTA adaptive UNI1 compression 
 - Catalog MCP: POST https://aziel-runtime.vibelock.workers.dev/mcp
 - This Worker skill: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/skill
 - This Worker OpenAPI: https://foldlock-download-tracker.vibelock.workers.dev/openapi.json
+- This Worker mesh: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh (PROXY; default OFF; QNM-BUILD-1.0)
 - Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example
 
 Local UI: Import JSON file (type=file) and Export JSON. Then foldlock doctor.
@@ -159,13 +169,14 @@ function openapiSpec(origin) {
       title: "FoldLock runtime",
       version: VERSION,
       summary: "Zip-class SOTA adaptive UNI1 compression engine on UTF-8 text.",
-      description: LIMITATION,
+      description: LIMITATION + " Suite mesh /v1/mesh/* PROXY to aziel-runtime (AZIEL_RUNTIME). Default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Aziel Eliab only.",
       license: { name: "Apache-2.0", identifier: "Apache-2.0" },
       contact: { name: "Aziel Eliab", url: "https://github.com/AzielEliab/foldlock" },
     },
     servers: [{ url: origin }],
     paths: {
             "/v1/example": { get: { operationId: "foldlockExample", summary: "Sample JSON payload. Does not increment downloads.", responses: { "200": { description: "OK" } } } },
+      ...meshOpenApiPaths(),
       "/v1/health": {
         get: {
           operationId: "foldlock_health",
@@ -227,10 +238,12 @@ function aiHtml(origin) {
 <p class="banner">${LIMITATION}</p>
 <p>Compression engine · zip-class SOTA adaptive UNI1. Author Aziel Eliab. Receipt zip: False (not the ZIP file format).</p>
 <p>Works with ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Cursor (MCP), Glama (MCP), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other MCP/OpenAPI-capable assistants.</p>
-<p>OpenAPI: <a href="${origin}/openapi.json">${origin}/openapi.json</a> (ChatGPT GPT Actions, Grok custom tool, Venice HTTP tools, or any OpenAPI import). MCP: POST <code>${origin}/mcp</code> (Cursor, Glama, and other MCP clients) · Catalog: <a href="${CATALOG}/">${CATALOG}</a></p>
+<p>OpenAPI: <a href="${origin}/openapi.json">${origin}/openapi.json</a> (ChatGPT GPT Actions, Grok custom tool, Venice HTTP tools, or any OpenAPI import). MCP: POST <code>${origin}/mcp</code> (Cursor, Glama, and other MCP clients) · Catalog: <a href="${CATALOG}/">${CATALOG}</a> (catalog <code>mesh_*</code> + FragGate <code>slug=mesh</code>)</p>
+<p>Suite mesh: <a href="${origin}/v1/mesh">${origin}/v1/mesh</a> PROXY to aziel-runtime. Default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author: Aziel Eliab only.</p>
 <p>Paper: <a href="${DOI}">${DOI}</a> · <a href="${ZENODO}">Zenodo 22257762</a></p>
 <pre>curl -A Mozilla/5.0 ${origin}/v1/health
 curl -A Mozilla/5.0 ${origin}/v1/skill
+curl -A Mozilla/5.0 ${origin}/v1/mesh
 curl -A Mozilla/5.0 -X POST ${origin}/v1/fold-preview -H 'content-type: application/json' \\
   -d '{"text":"the cat and the dog"}'</pre>
 <p>GET/POST under <code>/v1</code> never increment the download counter. Hosted preview is the UNI1 compression engine (not the ZIP file format).</p>
@@ -380,6 +393,7 @@ async function handleMcp(request) {
 
 export async function handleRuntimeApi(request, url) {
   const path = url.pathname.replace(/\/+$/, "") || "/";
+  if (path === "/v1/mesh" || path.startsWith("/v1/mesh/")) return null;
   if (path === "/mcp") return handleMcp(request);
   if (path === "/v1/health" && request.method === "GET") {
     return json({
@@ -397,6 +411,7 @@ export async function handleRuntimeApi(request, url) {
       catalog: CATALOG,
       author: "Aziel Eliab",
       doi: DOI,
+      mesh: meshPointer(),
     });
   }
   if ((path === "/v1/example" || path === "/v1/example/") && (request.method === "GET" || request.method === "HEAD")) {
@@ -455,7 +470,7 @@ export async function handleRuntimeApi(request, url) {
     }
   }
   if (path.startsWith("/v1/") || path === "/v1") {
-    return json({ error: "not found", hint: "GET /v1/health  GET /v1/skill  POST /v1/fold-preview  POST /v1/unfold-preview", limitation: LIMITATION, zip: false }, 404);
+    return json({ error: "not found", hint: "GET /v1/health  GET /v1/skill  GET /v1/mesh  POST /v1/fold-preview  POST /v1/unfold-preview", limitation: LIMITATION, zip: false }, 404);
   }
   return null;
 }

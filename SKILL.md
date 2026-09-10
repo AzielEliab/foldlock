@@ -1,6 +1,6 @@
 ---
 name: FoldLock
-description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. Author Aziel Eliab.
+description: Use this when folding or unfolding UTF-8 text with FoldLock, a zip-class SOTA adaptive UNI1 compression engine (classify → bakeoff → passthrough). Hosted preview via /v1. This Worker /v1/mesh/* PROXY to aziel-runtime via AZIEL_RUNTIME. Suite mesh default OFF. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.
 ---
 
 # FoldLock
@@ -27,6 +27,9 @@ Host: `https://foldlock-download-tracker.vibelock.workers.dev`
 |--------|------|------|
 | GET | `/v1/health` | Liveness. Does not increment downloads. |
 | GET | `/v1/skill` | This markdown. Does not increment downloads. |
+| GET | `/v1/mesh` | PROXY suite mesh status. Default OFF. QNM live\|locked\|isolated. Never enables. |
+| GET | `/v1/mesh/nodes` | PROXY Live Nodes roster (5-minute presence). |
+| POST | `/v1/mesh/{enable,disable,join,heartbeat,leave,broadcast}` | PROXY. Bearer required to enable. No auto-heal. Anon-broadcast is not a publish path. |
 | POST | `/v1/fold-preview` | Small UTF-8 text in → receipt + FLD3/UNI1/passthrough base64. SOTA adaptive UNI1. |
 | POST | `/v1/unfold-preview` | FLD3/UNI1/passthrough base64 in → verified restore or error. |
 
@@ -41,6 +44,7 @@ also `POST https://aziel-runtime.vibelock.workers.dev/mcp`
 
 ```bash
 curl -s -A 'Mozilla/5.0' https://foldlock-download-tracker.vibelock.workers.dev/v1/health
+curl -s -A 'Mozilla/5.0' https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh
 
 curl -s -A 'Mozilla/5.0' -X POST https://foldlock-download-tracker.vibelock.workers.dev/v1/fold-preview \
   -H 'content-type: application/json' \
@@ -82,3 +86,5 @@ File: FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf · Apache-2.0 · Eliab, Aziel
 Forks are welcome and always allowed.
 
 Local UI: Import JSON file and Export JSON. Run `foldlock doctor`. Sample payload: GET https://foldlock-download-tracker.vibelock.workers.dev/v1/example
+
+Worker homepage Live Nodes strip polls `GET /v1/mesh` (default OFF). Suite mesh `/v1/mesh/*` PROXY via `AZIEL_RUNTIME`. QNM-BUILD-1.0 live|locked|isolated. No Node Gate. No auto-heal. Not anonymity. Author Aziel Eliab.

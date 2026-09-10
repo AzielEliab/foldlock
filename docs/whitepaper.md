@@ -183,6 +183,13 @@ Hits: 3, 7, 3, 0. Header makes this tiny file larger than plaintext. That is exp
 | GodLock        | Not a codec.                                          |
 | UL / BAL       | Issue cluster. Do not file FoldLock under UL-CAT.     |
 
+The Worker homepage shows a suite Live Nodes strip. `/v1/mesh/*` PROXY
+to aziel-runtime. Suite mesh default OFF. QNM rollup is
+live|locked|isolated counts only. No Node Gate. No auto-heal. Not an
+anonymity network. Anon-broadcast is not a publish path. FoldLock
+remains a zip-class SOTA adaptive UNI1 compression engine (not the ZIP
+file format).
+
 ## 11. Limits
 
 FoldLock v0.3 does not:
