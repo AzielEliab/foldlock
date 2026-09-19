@@ -33,3 +33,15 @@ Default counted asset: `public/foldlock-0.8.0.tar.gz` via `/download` and
 `/download?asset=foldlock-0.8.0.tar.gz`. Rebuild the sdist from repo root
 (`python3 -m build --sdist`) and copy `dist/foldlock-0.8.0.tar.gz` here
 before deploy.
+
+## Human / bot schema (`/stats` and `/count`)
+
+Additive dual-count (Whitestone canary). Classification lives in `src/classify.js`
+and response shaping in `src/stats-shape.js`.
+
+Invariant: `views === views_human + views_bot` and
+`downloads === downloads_human + downloads_bot`.
+
+Legacy strategy (b): existing KV totals are never reset. Pre-split remainder
+is shown as bot on read (`views_bot = views - views_human`). Author: Aziel Eliab only.
+
