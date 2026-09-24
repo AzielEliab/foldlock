@@ -3,156 +3,84 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FoldLock — zip-class SOTA compression engine</title>
+  <title>FoldLock</title>
   <link rel="stylesheet" href="/style.css">
 </head>
-<body class="simple">
-  <header>
-    <div class="tag">FoldLock · v0.8.0-UNI1 · loopback · compression engine</div>
-    <h1>FoldLock</h1>
-    <p class="motto">Compression software. Compression engine. Zip-class. SOTA adaptive UNI1.</p>
-    <p class="lede">
-      This tool takes common little words (as, is, has, to, and, or, the…)
-      out of a story so the file can get smaller. Unfold puts them back.
-      We check the size and the hash. Short notes are left alone. Already
-      compressed files (photos, ZIP archives) are refused. That is honest.
-    </p>
+<body>
+  <header class="topbar">
+    <p class="mark">FoldLock</p>
+    <h1>Fold a text file</h1>
+    <p class="lede">Make UTF-8 text smaller when it can, then put the same bytes back.</p>
   </header>
 
-  <aside class="banner limit" role="note">
-    THIS IS: compression software and a compression engine (zip-class;
-    SOTA adaptive UNI1: classify → bakeoff → passthrough);
-    tether-word suppression and SIR packs; exact restore; short strings left alone.
-    THIS IS NOT: the ZIP file format, nor a zlib/gzip/DEFLATE/zstd/lzma wrapper;
-    a claim every file shrinks or that FoldLock beats zstd on all files; encryption;
-    UL; EmployeeLock; TemporalLock; GodLock.
-    Prose is the win lane. Ratios are per-file receipts.
-    zip: False · method: adaptive
-  </aside>
+  <main>
+    <section class="panel" aria-labelledby="fold-title">
+      <h2 id="fold-title">Your text</h2>
+      <label for="plain">Paste UTF-8 text, then choose Fold.</label>
+      <textarea id="plain" name="plain" rows="8" placeholder="the cat and the dog"></textarea>
+      <div class="actions">
+        <button type="button" id="btn-fold" class="primary">Fold</button>
+        <button type="button" id="btn-unfold" class="ghost">Unfold</button>
+      </div>
+      <p id="kid-plain" class="status" role="status">Paste text, then choose Fold. Unfold restores a folded file.</p>
+      <input id="open-text" type="file" hidden>
+      <input id="open-fld" type="file" accept=".fld,application/octet-stream" hidden>
+    </section>
 
-  <div class="view-toggle" role="group" aria-label="Simple or advanced view">
-    <button type="button" id="view-simple" class="view on" aria-pressed="true">Simple</button>
-    <button type="button" id="view-advanced" class="view" aria-pressed="false">Advanced</button>
-  </div>
+    <details class="more" id="advanced">
+      <summary>Advanced</summary>
+      <div class="more-body">
+        <div class="actions">
+          <button type="button" id="btn-verify" class="ghost">Verify</button>
+          <button type="button" id="btn-info" class="ghost">Info</button>
+          <button type="button" id="btn-doctor" class="ghost">Doctor</button>
+          <button type="button" id="btn-sample" class="ghost">Sample</button>
+          <button type="button" id="btn-dl-fld" class="ghost">Download .fld</button>
+          <button type="button" id="btn-dl-txt" class="ghost">Download restored</button>
+          <button type="button" id="btn-export" class="ghost">Export receipt</button>
+        </div>
 
-  <section class="counts" aria-live="polite">
-    <div><span id="c-hits">0</span><label>tether hits</label></div>
-    <div><span id="c-orig">0</span><label>orig bytes</label></div>
-    <div><span id="c-folded">0</span><label>folded bytes</label></div>
-    <div class="ok"><span id="c-zip">False</span><label>zip</label></div>
-    <div><span id="c-ratio">—</span><label>ratio</label></div>
-    <div class="ok"><span id="c-ok">—</span><label>verified</label></div>
-    <div><span id="c-strat">—</span><label>strategy</label></div>
-  </section>
+        <section class="counts" aria-live="polite">
+          <div><span id="c-orig">0</span><label>original bytes</label></div>
+          <div><span id="c-folded">0</span><label>folded bytes</label></div>
+          <div><span id="c-hits">0</span><label>tether hits</label></div>
+          <div><span id="c-ratio">—</span><label>ratio</label></div>
+          <div><span id="c-strat">—</span><label>strategy</label></div>
+          <div><span id="c-ok">—</span><label>verified</label></div>
+        </section>
+        <p class="receipt-note">zip: False</p>
+        <p id="c-zip" class="visually-hidden">False</p>
+        <p id="verify-line" class="sha-line"></p>
 
-  <div class="actions simple-actions">
-    <button type="button" id="btn-fold" class="big">Fold</button>
-    <button type="button" id="btn-unfold" class="big">Unfold</button>
-    <button type="button" id="btn-verify" class="big">Verify</button>
-    <input id="open-text" type="file" hidden>
-    <input id="open-fld" type="file" accept=".fld,application/octet-stream" hidden>
-  </div>
+        <h3>Receipt</h3>
+        <pre id="rows-pre">{}</pre>
 
-  <form id="text-form" autocomplete="off">
-    <fieldset>
-      <legend>Your text</legend>
-      <label for="plain"><span class="kicker">Type or paste UTF-8 text</span> Then tap Fold.</label>
-      <textarea id="plain" name="plain" rows="7" placeholder="the cat and the dog"></textarea>
-    </fieldset>
-  </form>
+        <section id="aziel-json-io">
+          <h3>Import / Export JSON</h3>
+          <p class="help">Import a .json file, or export this session. Nothing is uploaded.</p>
+          <input id="aziel-import-json" type="file" accept="application/json,.json">
+          <div class="actions">
+            <button type="button" id="aziel-import-json-btn" class="ghost">Import JSON file</button>
+            <button type="button" id="aziel-export-json-btn" class="ghost">Export JSON</button>
+          </div>
+          <p class="help" id="aziel-json-status" role="status"></p>
+        </section>
+      </div>
+    </details>
 
-  <div class="actions advanced-only">
-    <button type="button" id="btn-sample">Sample vectors</button>
-    <button type="button" id="btn-info">Info</button>
-    <button type="button" id="btn-export">Export receipt</button>
-    <button type="button" id="btn-doctor">Doctor</button>
-    <button type="button" id="btn-dl-fld">Download .fld</button>
-    <button type="button" id="btn-dl-txt">Download restored</button>
-  </div>
+    <details class="more" id="about">
+      <summary>About</summary>
+      <div class="more-body">
+        <p>Author: Aziel Eliab</p>
+        <p>Version <!--VERSION--> · Apache-2.0 · This page listens on 127.0.0.1 only.</p>
+        <p id="about-scope"><!--LIMITATION--></p>
+      </div>
+    </details>
+  </main>
 
-  <section class="report" aria-live="polite">
-    <p id="kid-plain" class="kid">Type a sentence. Tap Fold. Tap Verify to check the hash. Short notes stay the same size.</p>
-    <p id="verify-line" class="sha-line"></p>
-    <div id="advanced-panel" class="advanced-panel" hidden>
-      <h2>Receipt</h2>
-      <pre id="rows-pre">{}</pre>
-    </div>
-  </section>
-
-  
-<section class="card" id="aziel-json-io">
-  <h2>Import / Export JSON</h2>
-  <p class="help">Tap Import JSON file to pick a .json. Export JSON saves the current session locally. Nothing is uploaded.</p>
-  <input id="aziel-import-json" type="file" accept="application/json,.json">
-  <p>
-    <button type="button" id="aziel-import-json-btn">Import JSON file</button>
-    <button type="button" id="aziel-export-json-btn">Export JSON</button>
-  </p>
-  <p class="help" id="aziel-json-status"></p>
-</section>
-
-<footer>
-    <p>Apache-2.0 · Aziel Eliab · 2026 · Bound to 127.0.0.1:8872 · Forks welcome and always allowed.</p>
-    <p class="foot-note">Zip-class SOTA compression engine. Not the ZIP file format. Not WhistleLock (sibling paper, different product). UNI1 FL-WP-0.8 · method paper FL-WP-0.3 · DOI 10.5281/zenodo.22257762</p>
+  <footer>
+    <p>Aziel Eliab · Apache-2.0</p>
   </footer>
   <script src="/app.js"></script>
-
-<script>
-(function(){
-  var file = document.getElementById("aziel-import-json");
-  var imp = document.getElementById("aziel-import-json-btn");
-  var exp = document.getElementById("aziel-export-json-btn");
-  var status = document.getElementById("aziel-json-status");
-  if (!file || !imp || !exp) return;
-  function say(m){ if (status) status.textContent = m; }
-  function collect(){
-    var data = { product: document.title || "", exported_at: new Date().toISOString(), author: "Aziel Eliab" };
-    document.querySelectorAll("input, select, textarea").forEach(function(el){
-      if (!el.id || el.type === "file" || el.type === "password") return;
-      data[el.id] = el.type === "checkbox" ? el.checked : el.value;
-    });
-    if (window.__azielLastJson && typeof window.__azielLastJson === "object") {
-      data.last = window.__azielLastJson;
-    }
-    return data;
-  }
-  function apply(obj){
-    if (!obj || typeof obj !== "object") return;
-    window.__azielLastJson = obj;
-    Object.keys(obj).forEach(function(k){
-      if (k === "last" || k === "product" || k === "exported_at" || k === "author") return;
-      var el = document.getElementById(k);
-      if (!el || el.type === "file" || el.type === "password") return;
-      if (el.type === "checkbox") el.checked = !!obj[k];
-      else if ("value" in el) el.value = obj[k];
-    });
-    var ta = document.querySelector("textarea");
-    if (ta && obj && !obj[ta.id] && typeof obj === "object") {
-      try { if (!ta.value) ta.value = JSON.stringify(obj, null, 2); } catch (e) {}
-    }
-  }
-  imp.addEventListener("click", function(){ file.click(); });
-  file.addEventListener("change", function(){
-    var f = file.files && file.files[0];
-    if (!f) return;
-    var r = new FileReader();
-    r.onload = function(){
-      try { apply(JSON.parse(String(r.result || "{}"))); say("Imported " + f.name); }
-      catch (e) { say("Invalid JSON"); }
-    };
-    r.readAsText(f);
-  });
-  exp.addEventListener("click", function(){
-    var blob = new Blob([JSON.stringify(collect(), null, 2)], {type: "application/json"});
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "session.json";
-    a.click();
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 800);
-    say("Exported JSON");
-  });
-})();
-</script>
-
 </body>
 </html>

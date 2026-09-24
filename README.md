@@ -1,79 +1,68 @@
 # FoldLock
 
-**Compression software** and a **compression engine**. Same category as zip. **SOTA** adaptive UNI1 tether/SIR fold on UTF-8 text (`classify → bakeoff → passthrough`).
+FoldLock makes a UTF-8 text file smaller when it can, then restores the same bytes.
 
 **Author:** Aziel Eliab
-**Date:** 4 September 2026
 **License:** [Apache-2.0](LICENSE)
-**Version:** 0.8.0-UNI1
-**Spec:** `foldlock-v0.8-UNI1` · Magics `FLD3` / `UNI1` · Lexicon TETH-1 (112 words)
-**Method paper:** FL-WP-0.3 — [docs/whitepaper.md](docs/whitepaper.md) · DOI [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762)
-**UNI1 shell:** FL-WP-0.8 — [docs/uni1.md](docs/uni1.md) (repo spec; no new DOI)
+**Version:** 0.8.0
 
-> Classify. Bake off. Passthrough if it would grow. Prose is the win lane.
+## Start
 
-**Forks are welcome and always allowed.**
+1. `python -m venv .venv && source .venv/bin/activate && pip install -e .`
+2. `foldlock ui`
+3. Open http://127.0.0.1:8872/ and choose **Fold**.
 
-## Honest scope
+From a file you already have: `foldlock fold examples/PROSE.txt`
 
-**THIS IS:** compression software and a compression engine (zip-class category; SOTA adaptive UNI1 tether/SIR fold on UTF-8 text: classify → bakeoff → passthrough); tether-word suppression (TETH/FLD4) and structural SIR/FLD5 with optional dictionary, abbreviation, number, and peer packs; exact restore of the original bytes; short strings left alone; already-compressed input refused.
+See [RUN.txt](RUN.txt) for the same three steps.
 
-**THIS IS NOT:** the ZIP file format, nor a zlib/gzip/DEFLATE/zstd/lzma wrapper; a claim every file shrinks or that FoldLock beats zstd on all files; translation of all inputs to Latin; encryption; UL; EmployeeLock; TemporalLock; GodLock; a published industry bake-off. Prose/text is the win lane. Code and markup often passthrough. Ratios and `beats_zstd` are per-file receipts, never a global championship.
+## Commands
+
+```bash
+foldlock
+foldlock fold INFILE [--out OUT.fld]
+foldlock unfold IN.fld [--out OUTFILE]
+foldlock info IN.fld
+foldlock ui
+foldlock doctor
+foldlock --help
+```
+
+People get short sentences. Add `--json` for the machine receipt (`fold`, `unfold`, `info`, `doctor`).
+
+Advanced: `foldlock fold INFILE --latin-pack` also tries the optional Latin peer pack. Opcodes restore the original English words.
+
+`foldlock ui` listens on `127.0.0.1` only. The page has one primary action, **Fold**. **Unfold** sits beside it. Verify, Doctor, sample text, receipts, and JSON import/export are under **Advanced**.
+
+## Notes
+
+FoldLock folds UTF-8 text. It classifies the text, tries the folds it knows, and keeps the smallest exact restore. When folding would not shrink the file, the original bytes are written unchanged. Short text stays the same size. Photos, ZIP archives, and other already-compressed files are refused. A restore is kept when the size and SHA-256 match. Ratios and `beats_zstd` belong to that file. FLD3 files from v0.3 still unfold.
 
 | Input | What FoldLock does |
 |-------|--------------------|
-| Prose / markdown / plain text | Compete SIR + TETH + peer; keep the smallest exact restore |
-| Source code | TETH or passthrough |
-| JSON / HTML / XML | Often leave alone |
+| Prose / markdown / plain text | Keep the smallest exact restore |
+| Source code | Tether fold, or leave unchanged |
+| JSON / HTML / XML | Often leave unchanged |
 | zip / png / jpg / pdf / zst / … | Refuse |
-| Short strings | Passthrough — they do not grow |
-| Mixed / unknown UTF-8 | Compete; passthrough if nothing shrinks |
+| Short strings | Leave unchanged |
+| Mixed / unknown UTF-8 | Try; leave unchanged when nothing shrinks |
 
-v0.3 FLD3 files still unfold. Discarded reticule / glyph-rotation experiment: [docs/experiments-reticule.md](docs/experiments-reticule.md).
+Spec `foldlock-v0.8-UNI1`. Magics `FLD3` / `UNI1`. Lexicon TETH-1 (112 words).
+Method paper FL-WP-0.3 — [docs/whitepaper.md](docs/whitepaper.md) · DOI [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762).
+UNI1 shell FL-WP-0.8 — [docs/uni1.md](docs/uni1.md).
+Discarded reticule experiment: [docs/experiments-reticule.md](docs/experiments-reticule.md).
 
-## One-click install
+**Forks are welcome and always allowed.**
+
+## Install from the counted download
 
 ```bash
 curl -fsSL https://foldlock-download-tracker.vibelock.workers.dev/install.sh | bash
 ```
 
-The script curls the **counted** tarball from this project's Worker
-(`/download`, User-Agent `Mozilla/5.0`), extracts, makes a venv, and
-`pip install -e .`. Then run `foldlock ui`.
+The script downloads the counted tarball (`/download`, User-Agent `Mozilla/5.0`), extracts it, makes a venv, and runs `pip install -e .`. Then run `foldlock ui`.
 
-Or tap **Download and install** / **Install** on the Worker homepage
-(a 6th-grader can tap it):
-https://foldlock-download-tracker.vibelock.workers.dev/
-
-## Quick start
-
-```bash
-python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
-python3 foldlock.py fold examples/PROSE.txt --out /tmp/p.fld
-python3 foldlock.py unfold /tmp/p.fld --out /tmp/p.out
-cmp examples/PROSE.txt /tmp/p.out
-foldlock doctor
-foldlock ui
-```
-
-Open http://127.0.0.1:8872 (loopback only). No CDN, no telemetry.
-
-`examples/VECTORS.txt` (63 bytes) is left alone (passthrough). Unfold is identity. That is the short-string rule.
-
-Optional Latin peer pack (opcodes restore English; never translate-then-fold):
-
-```bash
-python3 foldlock.py fold examples/PROSE.txt --out /tmp/p.fld --latin-pack
-```
-
-## Counted download (Cloudflare Worker)
-
-**This is the counted download.** GitHub releases exist as a mirror.
-The Worker serves the gzip itself (HTTP 200, no 302 to GitHub).
-
-# → [https://foldlock-download-tracker.vibelock.workers.dev/](https://foldlock-download-tracker.vibelock.workers.dev/) ←
-
-Direct tarball (also counted):
+Counted tarball:
 [foldlock-0.8.0.tar.gz](https://foldlock-download-tracker.vibelock.workers.dev/download?asset=foldlock-0.8.0.tar.gz)
 
 - Live count JSON: [https://foldlock-download-tracker.vibelock.workers.dev/stats](https://foldlock-download-tracker.vibelock.workers.dev/stats)
@@ -82,61 +71,31 @@ Direct tarball (also counted):
 - Suite mesh proxy: [https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh](https://foldlock-download-tracker.vibelock.workers.dev/v1/mesh) — default OFF; QNM live / locked / isolated; QNS-CD-1.0 photon QNS1 packet transfer (hub cite / Worker mesh cross-map only; no public qnsd proxy)
 - GitHub: [https://github.com/AzielEliab/foldlock](https://github.com/AzielEliab/foldlock)
 
-Isolated counter: Worker `foldlock-download-tracker`, KV `FOLDLOCK_DOWNLOADS`. Not mixed with any other product. `/v1` does not increment downloads.
-
-## CLI
-
-```bash
-python3 foldlock.py fold INFILE [--out OUT.fld] [--latin-pack]
-python3 foldlock.py unfold IN.fld [--out OUTFILE]
-python3 foldlock.py info IN.fld
-foldlock ui
-foldlock doctor
-```
-
-Unfold prints `verified: True` and `zip: False` (not the ZIP file format) when size and SHA-256 match.
-FLD2 (zlib wrapper) is refused. Already-compressed files (png/zip/…) are refused.
-Short strings and no-shrink losers are written as the original bytes (`magic: PASS`).
-
-## Local UI
-
-`foldlock ui` serves a loopback dashboard at http://127.0.0.1:8872
-
-Simple: **Fold**, **Unfold**, **Verify**. Advanced (tucked away): Info,
-Doctor, Sample vectors, Export receipt, hashes, hits, ratio, strategy.
-Import JSON / Export JSON. Shows the winning strategy and `zip: False` (not the ZIP file format).
-Binds `127.0.0.1` only.
+Isolated counter: Worker `foldlock-download-tracker`, KV `FOLDLOCK_DOWNLOADS`. `/v1` does not increment downloads.
 
 ## iPhone & Android
 
-Flutter sources: [`mobile/`](mobile/). Application id
-`com.azieeliab.foldlock`. Offline. No analytics. Dark matte / gold.
-Not a store listing. Not a separate repo.
+Flutter sources: [`mobile/`](mobile/). Application id `com.azieeliab.foldlock`. Offline. The phone screen is a simple reader. The fold runs in this desktop package.
 
 ```bash
 cd mobile
 flutter create --org com.azieeliab --project-name foldlock .
-flutter pub get
-flutter run
+flutter pub get && flutter run
 ```
 
-## Hosted `/v1`
+## Hosted preview
 
-The Worker hosts a **stateless** preview API. It does not increment DOWNLOADS.
+The Worker hosts a stateless preview API. It does not increment DOWNLOADS.
 
 - `GET /v1/health`
 - `GET /v1/skill` — this repo's [SKILL.md](SKILL.md)
 - `GET /v1/mesh` — PROXY suite mesh status (default OFF; QNM-BUILD-1.0 live|locked|isolated; QNS-CD-1.0 cross-map)
-- `POST /v1/fold-preview` — small UTF-8 text in, receipt + container or passthrough base64 (cap ~8 KB)
+- `POST /v1/fold-preview` — small UTF-8 text in, receipt + container or unchanged bytes base64 (cap ~8 KB)
 - `POST /v1/unfold-preview` — FLD3 / UNI1 / passthrough base64 in, verified restore or error
 - OpenAPI: `/openapi.json`
 - MCP: this Worker `/mcp` and catalog `https://aziel-runtime.vibelock.workers.dev/mcp`. Suite mesh `/v1/mesh/*` PROXY via `AZIEL_RUNTIME` (default OFF; QNM-BUILD-1.0 live|locked|isolated; QNS-CD-1.0 photon QNS1 packet transfer is a hub cite / Worker mesh cross-map only — local qnsd in [qnm-node](https://github.com/AzielEliab/qnm-node), runtime cites + catalog field in [aziel-runtime](https://github.com/AzielEliab/aziel-runtime), pair custody in [AZInterface](https://github.com/AzielEliab/azinterface); no public qnsd proxy; not a Softwares-tab product; no Node Gate). Catalog MCP `mesh_*` + FragGate `slug=mesh`.
 
-Banner: SOTA adaptive UNI1 compression engine. Not the ZIP file format.
-
-Catalog card fields to bump on **aziel-runtime** (separate deploy) and the
-Downloadable-software listing hint for azielcorpuslibrary:
-[docs/catalog-aziel-runtime.md](docs/catalog-aziel-runtime.md).
+Catalog card fields live in [docs/catalog-aziel-runtime.md](docs/catalog-aziel-runtime.md).
 
 ## Use with AI assistants
 
@@ -147,14 +106,11 @@ Always send `User-Agent: Mozilla/5.0`. Empty agents can 403.
 **OpenAPI (no auth)** — Import from URL:
 `https://aziel-runtime.vibelock.workers.dev/openapi.json`
 (or this Worker's `https://foldlock-download-tracker.vibelock.workers.dev/openapi.json`).
-ChatGPT: GPT Actions → Import from URL. Grok: custom tool / OpenAPI. Venice: custom HTTP tools. Claude, Gemini, Copilot, Perplexity, Mistral, Meta AI, Cohere, and others: the same OpenAPI URL where the client accepts a spec.
 
 **MCP** — Cursor, Glama, and other MCP clients:
 `POST https://aziel-runtime.vibelock.workers.dev/mcp`
 (or `POST https://foldlock-download-tracker.vibelock.workers.dev/mcp`).
 Tools: `foldlock_health`, `foldlock_fold-preview`, `foldlock_unfold-preview`, `foldlock_skill`.
-
-Example:
 
 ```bash
 curl -s -A 'Mozilla/5.0' -X POST \
@@ -165,29 +121,27 @@ curl -s -A 'Mozilla/5.0' -X POST \
 
 Skill markdown: [SKILL.md](SKILL.md) · live `GET /v1/skill`.
 
-TETH-1 method DOI: [10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762). UNI1 has no new DOI.
-
 ## Papers
 
 See [docs/whitepaper.md](docs/whitepaper.md) (FL-WP-0.3 / FL-WP-0.3-R) and
 [docs/uni1.md](docs/uni1.md) (FL-WP-0.8 adaptive shell).
 
-The FL-WP-0.3 preprint also describes **WhistleLock**. **This repository is FoldLock only.** Do not put WhistleLock code here.
+The FL-WP-0.3 preprint also describes WhistleLock. This repository is FoldLock only. WhistleLock stays in its own repository.
 
 - Paper (PDF): [FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf](https://zenodo.org/records/22257762)
 - DOI: [https://doi.org/10.5281/zenodo.22257762](https://doi.org/10.5281/zenodo.22257762)
 - Zenodo record: [https://zenodo.org/records/22257762](https://zenodo.org/records/22257762)
 - License: Apache-2.0. Creator: Eliab, Aziel.
 
-## Mesh (siblings, not this product)
+## Sibling products
 
 | Sibling | Boundary |
 |---------|----------|
 | WhistleLock | Local drop + dead-man. Same preprint, different repo. |
 | EmployeeLock | May index a `.fld` as a file. It does not fold. |
 | TemporalLock | Time receipts. FoldLock has no timestamp field. |
-| GodLock | Public ABAD node. Not a codec. |
-| UL / BAL | Issue papers stay issue papers. Do not file FoldLock under UL-CAT. |
+| GodLock | Public ABAD node. A sibling product name. |
+| UL / BAL | Issue papers stay issue papers. |
 
 ## Tests
 
@@ -195,24 +149,14 @@ The FL-WP-0.3 preprint also describes **WhistleLock**. **This repository is Fold
 python -m pytest -q
 ```
 
-VECTORS.txt must exact-restore and must not grow. PROSE.txt must shrink and exact-restore. png/zip fixtures must be refused. `foldlock doctor` must pass.
-
-## Use with AI assistants
-
-Catalog OpenAPI: https://aziel-runtime.vibelock.workers.dev/openapi.json
-Catalog MCP: `POST https://aziel-runtime.vibelock.workers.dev/mcp`
-This Worker skill: https://foldlock-download-tracker.vibelock.workers.dev/v1/skill
-This Worker OpenAPI: https://foldlock-download-tracker.vibelock.workers.dev/openapi.json
-
-Import the catalog or Worker OpenAPI (no auth) in ChatGPT (GPT Actions / OpenAI), Grok (xAI), Venice, Claude (Anthropic), Perplexity, Microsoft Copilot / Bing, Google Gemini / Vertex, Mistral, Meta AI, Apple Intelligence surfaces, Amazon Q tooling, DuckAssist, You.com, Cohere, and other OpenAPI-capable assistants. Add the MCP endpoint in Cursor, Glama, and other MCP clients. Always send `User-Agent: Mozilla/5.0`.
+`examples/VECTORS.txt` must exact-restore and must not grow. `examples/PROSE.txt` must shrink and exact-restore. png/zip fixtures must be refused. `foldlock doctor` must pass.
 
 ## Cite this
 
 Aziel Eliab. FoldLock. https://github.com/AzielEliab/foldlock. https://foldlock-download-tracker.vibelock.workers.dev. https://doi.org/10.5281/zenodo.22257762.
 
 - Catalog: https://aziel-runtime.vibelock.workers.dev/
-- Worker homepage: https://foldlock-download-tracker.vibelock.workers.dev/
-- Counted download (gzip HTTP 200, no 302): https://foldlock-download-tracker.vibelock.workers.dev/download
+- Counted download: https://foldlock-download-tracker.vibelock.workers.dev/download
 - GitHub: https://github.com/AzielEliab/foldlock
 - Citation JSON: https://foldlock-download-tracker.vibelock.workers.dev/cite.json
 - DOI (TETH-1 method paper): https://doi.org/10.5281/zenodo.22257762

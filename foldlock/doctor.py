@@ -244,9 +244,9 @@ def run_doctor(*, as_json: bool = False) -> int:
         results.append({"name": name, "ok": ok, "detail": detail})
         if not ok:
             failed += 1
-        mark = "ok" if ok else "FAIL"
         if not as_json:
-            print(f"[{mark}] {name}" + (f" — {detail}" if detail else ""))
+            mark = "pass" if ok else "fail"
+            print(f"{mark}  {name}" + (f"  {detail}" if detail else ""))
     payload = {
         "ok": failed == 0,
         "failed": failed,
@@ -261,7 +261,10 @@ def run_doctor(*, as_json: bool = False) -> int:
     }
     if as_json:
         print(json.dumps(payload, indent=2))
+    elif failed == 0:
+        print("Doctor passed.")
+        print("Next:  foldlock ui")
     else:
-        print("limitation:", LIMITATION)
-        print("doctor", "passed" if failed == 0 else "failed")
+        print(f"Doctor failed ({failed}).")
+        print("Next:  foldlock doctor --json")
     return 0 if failed == 0 else 1

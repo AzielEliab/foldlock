@@ -1,19 +1,17 @@
 """Local FoldLock UI. Bind 127.0.0.1:8872 only.
 
-Buttons: Fold file, Unfold, Info, Verify (hashes), Doctor, Sample vectors,
-Export receipt. Simple / Advanced. Show zip: False, method tether-suppression,
-hits, ratio. No CDN, no telemetry. Loopback only.
+Primary actions: Fold and Unfold. Advanced holds Info, Verify, Doctor,
+sample text, downloads, and the receipt. Loopback only. No CDN. No telemetry.
 """
 
 from __future__ import annotations
 
 import base64
 import hashlib
+import html
 import json
-import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files
-from pathlib import Path
 from urllib.parse import urlparse
 
 from foldlock.engine import (
@@ -49,6 +47,21 @@ _STATE: dict[str, bytes | dict | None] = {
 
 def _web_bytes(name: str) -> bytes:
     return (WEB / name).read_bytes()
+
+
+def _index_html() -> bytes:
+    text = _web_bytes("index.html").decode("utf-8")
+    text = text.replace("<!--VERSION-->", html.escape(ENGINE_VERSION))
+    text = text.replace("<!--LIMITATION-->", html.escape(LIMITATION))
+    return text.encode("utf-8")
+
+
+def _wants_json(header: str | None) -> bool:
+    """Machine clients ask for JSON. A browser Accept list that includes HTML stays HTML."""
+    accept = (header or "").lower()
+    if "application/json" not in accept:
+        return False
+    return "text/html" not in accept
 
 
 def _ensure_fold() -> dict:
@@ -149,7 +162,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path in {"/", "/index.html"}:
-            self._send(200, _web_bytes("index.html"), MIME[".html"])
+            if path == "/" and _wants_json(self.headers.get("Accept")):
+                self._json(200, _ensure_fold())
+                return
+            self._send(200, _index_html(), MIME[".html"])
             return
         if path == "/style.css":
             self._send(200, _web_bytes("style.css"), MIME[".css"])
@@ -341,13 +357,11 @@ def make_server(host: str = "127.0.0.1", port: int = 8872) -> ThreadingHTTPServe
 def serve(host: str = "127.0.0.1", port: int = 8872) -> None:
     httpd = make_server(host, port)
     bound_host, bound_port = httpd.server_address[:2]
-    print(
-        f"FoldLock UI http://{bound_host}:{bound_port} "
-        "(loopback only; zip-class SOTA UNI1 compression engine)"
-    )
+    shown = f"[{bound_host}]" if ":" in str(bound_host) and not str(bound_host).startswith("[") else bound_host
+    print(f"Open http://{shown}:{bound_port}/")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nstopped")
+        print("\nStopped.")
     finally:
         httpd.server_close()
