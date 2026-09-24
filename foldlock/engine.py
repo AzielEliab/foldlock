@@ -21,16 +21,15 @@ METHOD_PAPER_ID = "FL-WP-0.3"
 
 LIMITATION = (
     "THIS IS: compression software and a compression engine (zip-class "
-    "category; SOTA adaptive UNI1 tether/SIR fold on UTF-8 text: classify → "
-    "bakeoff → passthrough); tether-word suppression (TETH/FLD4) and "
-    "structural SIR/FLD5 with optional dictionary, abbreviation, number, and "
-    "peer packs; exact restore of the original bytes; short strings left "
-    "alone; already-compressed input refused. "
+    "category; adaptive UNI1: classify → bakeoff → passthrough). It folds "
+    "any readable file it can make smaller: tether and SIR on text, and a "
+    "byte-tether lane (runs and repeated windows) on other bytes. Exact "
+    "restore of the original bytes. Files stay unchanged when folding would "
+    "not shrink them. "
     "THIS IS NOT: the ZIP file format, nor a zlib/gzip/DEFLATE/zstd/lzma "
     "wrapper; a claim every file shrinks or that FoldLock beats zstd on all "
     "files; translation of all inputs to Latin; encryption; UL; "
     "EmployeeLock; TemporalLock; GodLock; a published industry bake-off. "
-    "Prose/text is the win lane. Code and markup often passthrough. "
     "Ratios and beats_zstd are per-file receipts, never a global championship."
 )
 
@@ -444,11 +443,15 @@ def unfold_bytes(blob: bytes) -> tuple[bytes, dict]:
             {"strategy": "teth", "magic": "FLD3"},
         )
     if len(blob) >= 4 and blob[:4] == MAGIC_UNI1:
-        from foldlock.uni1 import read_uni1, unfold_uni1_payload
+        from foldlock.bytefold import decode_byte
+        from foldlock.uni1 import STRAT_BYTE, read_uni1, unfold_uni1_payload
 
         meta, payload = read_uni1(blob)
-        text = unfold_uni1_payload(meta, payload)
-        raw = text.encode("utf-8")
+        if meta.get("strategy_id") == STRAT_BYTE:
+            raw = decode_byte(payload)
+        else:
+            text = unfold_uni1_payload(meta, payload)
+            raw = text.encode("utf-8")
         if len(raw) != meta["orig_size"]:
             raise ValueError("orig_size mismatch after unfold — suppression restore failed")
         got = hashlib.sha256(raw).digest()

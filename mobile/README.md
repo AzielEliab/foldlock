@@ -14,7 +14,7 @@ The phone screen is a simple reader. The fold runs in the desktop package.
 
 Application id: `com.azieeliab.foldlock`. Offline. Light and dark follow the system. Gold focus.
 
-FoldLock folds UTF-8 text and restores the same bytes when the size and SHA-256 match. Short text stays the same size. Photos, ZIP archives, and other already-compressed files are refused. Ratios are per-file receipts.
+FoldLock folds any file it can make smaller, and leaves the rest alone. A restore matches when the size and SHA-256 match. Ratios are per-file receipts.
 
 Desktop package: https://github.com/AzielEliab/foldlock
 

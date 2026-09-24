@@ -1,6 +1,6 @@
 # FoldLock
 
-FoldLock makes a UTF-8 text file smaller when it can, then restores the same bytes.
+FoldLock folds any file it can make smaller, and leaves the rest alone.
 
 **Author:** Aziel Eliab
 **License:** [Apache-2.0](LICENSE)
@@ -36,14 +36,14 @@ Advanced: `foldlock fold INFILE --latin-pack` also tries the optional Latin peer
 
 ## Notes
 
-FoldLock folds UTF-8 text. It classifies the text, tries the folds it knows, and keeps the smallest exact restore. When folding would not shrink the file, the original bytes are written unchanged. Short text stays the same size. Photos, ZIP archives, and other already-compressed files are refused. A restore is kept when the size and SHA-256 match. Ratios and `beats_zstd` belong to that file. FLD3 files from v0.3 still unfold.
+FoldLock folds any readable file it can make smaller. It classifies the bytes, tries the lanes it knows, and keeps the smallest exact restore. Text can use tether and SIR. Other bytes use the byte-tether lane (runs and repeated windows). When folding would not shrink the file, the original bytes are written unchanged. Short text stays the same size. A restore is kept when the size and SHA-256 match. Ratios and `beats_zstd` belong to that file. FLD3 files from v0.3 still unfold.
 
 | Input | What FoldLock does |
 |-------|--------------------|
 | Prose / markdown / plain text | Keep the smallest exact restore |
 | Source code | Tether fold, or leave unchanged |
 | JSON / HTML / XML | Often leave unchanged |
-| zip / png / jpg / pdf / zst / … | Refuse |
+| zip / png / jpg / pdf / zst / … | Byte-tether when it shrinks; otherwise leave unchanged |
 | Short strings | Leave unchanged |
 | Mixed / unknown UTF-8 | Try; leave unchanged when nothing shrinks |
 
@@ -149,7 +149,7 @@ The FL-WP-0.3 preprint also describes WhistleLock. This repository is FoldLock o
 python -m pytest -q
 ```
 
-`examples/VECTORS.txt` must exact-restore and must not grow. `examples/PROSE.txt` must shrink and exact-restore. png/zip fixtures must be refused. `foldlock doctor` must pass.
+`examples/VECTORS.txt` must exact-restore and must not grow. `examples/PROSE.txt` must shrink and exact-restore. A repetitive non-text file must shrink and exact-restore. Already-packed bytes that do not shrink must come back unchanged. `foldlock doctor` must pass.
 
 ## Cite this
 

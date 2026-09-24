@@ -9,20 +9,20 @@
 <body>
   <header class="topbar">
     <p class="mark">FoldLock</p>
-    <h1>Fold a text file</h1>
-    <p class="lede">Make UTF-8 text smaller when it can, then put the same bytes back.</p>
+    <h1>Fold a file</h1>
+    <p class="lede">FoldLock folds any file it can make smaller, and leaves the rest alone.</p>
   </header>
 
   <main>
     <section class="panel" aria-labelledby="fold-title">
-      <h2 id="fold-title">Your text</h2>
-      <label for="plain">Paste UTF-8 text, then choose Fold.</label>
+      <h2 id="fold-title">Your file</h2>
+      <label for="plain">Paste text, or drop any file, then choose Fold.</label>
       <textarea id="plain" name="plain" rows="8" placeholder="the cat and the dog"></textarea>
       <div class="actions">
         <button type="button" id="btn-fold" class="primary">Fold</button>
         <button type="button" id="btn-unfold" class="ghost">Unfold</button>
       </div>
-      <p id="kid-plain" class="status" role="status">Paste text, then choose Fold. Unfold restores a folded file.</p>
+      <p id="kid-plain" class="status" role="status">Drop a file or paste text, then choose Fold. Unfold restores a folded file.</p>
       <input id="open-text" type="file" hidden>
       <input id="open-fld" type="file" accept=".fld,application/octet-stream" hidden>
     </section>

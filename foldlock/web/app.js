@@ -13,24 +13,45 @@
     if (el) el.textContent = value;
   }
 
+  const METHOD = {
+    passthrough: "left unchanged",
+    teth: "tether fold",
+    "tether-suppression": "tether fold",
+    teth_peer: "tether fold with peer words",
+    "tether-peer": "tether fold with peer words",
+    sir: "structural fold",
+    bodyx: "mixed fold",
+    byte: "byte tether",
+    "byte-tether": "byte tether"
+  };
+
+  function methodName(strategy) {
+    if (!strategy) return "";
+    const gloss = METHOD[strategy];
+    return gloss ? (gloss + " (" + strategy + ")") : strategy;
+  }
+
   function plainStatus(state) {
-    if (!state) return "Paste text, then choose Fold.";
+    if (!state) return "Drop a file or paste text, then choose Fold.";
     if (state.error) {
-      return state.error + " Try a UTF-8 text file, then Fold again.";
+      return state.error + " Try another file, then Fold again.";
     }
     const receipt = state.receipt || {};
     const strategy = receipt.strategy || state.method || "";
     const verified = (state.verify && state.verify.ok === true) || (state.unfold && state.unfold.verified === true);
+    const name = state.name ? (state.name + ": ") : "";
     if (strategy === "passthrough") {
-      return "Left as-is (" + (state.orig_size || 0) + " bytes). Folding would not make this smaller.";
+      return name + "Left as-is (" + (state.orig_size || 0) + " bytes). Folding would not make this smaller.";
     }
     if (state.has_folded && state.orig_size && state.folded_size < state.orig_size) {
-      let line = "Folded " + state.orig_size + " bytes down to " + state.folded_size + " bytes.";
+      let line = name + "Folded " + state.orig_size + " bytes down to " + state.folded_size + " bytes.";
+      const how = methodName(strategy);
+      if (how) line += " Method: " + how + ".";
       if (verified) line += " Restore check passed.";
       return line;
     }
-    if (verified) return "Restore check passed.";
-    return "Paste text, then choose Fold. Unfold restores a folded file.";
+    if (verified) return name + "Restore check passed.";
+    return "Drop a file or paste text, then choose Fold.";
   }
 
   function paint(state) {
@@ -46,7 +67,10 @@
     const unknown = verified.ok == null && !state.unfold;
     setText("c-ok", unknown ? "—" : (ok ? "yes" : "no"));
     setText("c-strat", receipt.strategy || state.method || "—");
-    if (state.sample_text != null && plain) plain.value = state.sample_text;
+    if (plain) {
+      if (state.sample_text != null) plain.value = state.sample_text;
+      else if (state.has_folded && state.name && state.name !== "typed.txt") plain.value = "";
+    }
     if (kid) kid.textContent = plainStatus(state);
     const sha = state.orig_sha256 || "";
     if (verifyLine) {
@@ -76,7 +100,20 @@
 
   function showError(err) {
     const reason = (err && err.message) ? err.message : String(err);
-    if (kid) kid.textContent = reason + " Try a UTF-8 text file, or choose Unfold for a folded file.";
+    if (kid) kid.textContent = reason + " Try another file, or choose Unfold for a folded file.";
+  }
+
+  function foldFile(file) {
+    if (!file) return;
+    file.arrayBuffer().then(function (buf) {
+      const bytes = new Uint8Array(buf);
+      let binary = "";
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+      }
+      return post("/api/fold", { name: file.name, b64: btoa(binary) });
+    }).then(paint).catch(showError);
   }
 
   function refresh() {
@@ -102,15 +139,26 @@
 
   openText.addEventListener("change", function () {
     const file = openText.files && openText.files[0];
-    if (!file) return;
-    file.arrayBuffer().then(function (buf) {
-      const bytes = new Uint8Array(buf);
-      let binary = "";
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      return post("/api/fold", { name: file.name, b64: btoa(binary) });
-    }).then(paint).catch(showError);
+    foldFile(file);
     openText.value = "";
   });
+
+  const panel = document.querySelector(".panel");
+  if (panel) {
+    panel.addEventListener("dragover", function (event) {
+      event.preventDefault();
+      panel.classList.add("drag");
+    });
+    panel.addEventListener("dragleave", function () {
+      panel.classList.remove("drag");
+    });
+    panel.addEventListener("drop", function (event) {
+      event.preventDefault();
+      panel.classList.remove("drag");
+      const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      foldFile(file);
+    });
+  }
 
   openFld.addEventListener("change", function () {
     const file = openFld.files && openFld.files[0];

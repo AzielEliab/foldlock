@@ -18,8 +18,6 @@ from foldlock.engine import (
     suppress,
     unfold_bytes,
 )
-from foldlock.uni1 import FoldRefuse
-
 VECTORS_PATH = Path(__file__).resolve().parents[1] / "examples" / "VECTORS.txt"
 PROSE_PATH = Path(__file__).resolve().parents[1] / "examples" / "PROSE.txt"
 
@@ -74,16 +72,25 @@ def test_line_hits() -> None:
         assert stats["tether_hits"] == hits, line
 
 
-def test_refuse_binary() -> None:
+def test_png_passthrough_or_smaller() -> None:
     png = b"\x89PNG\r\n\x1a\n" + b"\x00\x01\x02\x03" * 8
-    with pytest.raises((ValueError, FoldRefuse), match="Binary|UTF-8|zip|compress|png"):
-        fold_bytes(png, name="x.png")
+    blob, receipt = fold_bytes(png, name="x.png")
+    assert len(blob) <= len(png)
+    assert receipt["grew"] is False
+    assert receipt["zip"] is False
+    restored, un = unfold_bytes(blob)
+    assert restored == png
+    assert un["verified"] is True
 
 
-def test_refuse_zip_magic() -> None:
+def test_zip_magic_passthrough_or_smaller() -> None:
     zipped = b"PK\x03\x04" + b"hello text payload that is valid utf-8"
-    with pytest.raises((ValueError, FoldRefuse), match="compress|zip"):
-        fold_bytes(zipped, name="x.zip")
+    blob, receipt = fold_bytes(zipped, name="x.zip")
+    assert len(blob) <= len(zipped)
+    assert receipt["grew"] is False
+    restored, un = unfold_bytes(blob)
+    assert restored == zipped
+    assert un["verified"] is True
 
 
 def test_refuse_fld2() -> None:

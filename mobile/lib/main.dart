@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 
 const limitation =
-    'FoldLock folds UTF-8 text and restores the same bytes when the size '
-    'and SHA-256 match. Short text stays the same size. Photos, ZIP archives, '
-    'and other already-compressed files are refused. Ratios are per-file '
-    'receipts. Author Aziel Eliab.';
+    'FoldLock folds any file it can make smaller, and leaves the rest alone. '
+    'The desktop package restores the same bytes when the size and SHA-256 match. '
+    'Ratios are per-file receipts. Author Aziel Eliab.';
 
 const vectors = 'the cat and the dog\n'
     'As is has to and or etc.\n'
@@ -59,7 +58,7 @@ class _FoldPageState extends State<FoldPage> {
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'Make UTF-8 text smaller when it can, then put the same bytes back.',
+            'FoldLock folds any file it can make smaller, and leaves the rest alone.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 16),

@@ -24,14 +24,14 @@ from foldlock.engine import fold, info, unfold
 from foldlock.uni1 import FoldRefuse
 
 TOP_HELP = f"""\
-FoldLock makes a UTF-8 text file smaller when it can, then restores the same bytes.
+FoldLock folds any file it can make smaller, and leaves the rest alone.
 
 Usage:
   foldlock
   foldlock <command> [options]
 
 Common commands:
-  fold <file>      Fold a text file. Leaves it unchanged when folding would not shrink it.
+  fold <file>      Fold any file. Leaves it unchanged when folding would not shrink it.
   unfold <file>    Restore the original bytes.
   info <file>      Show what a folded file contains.
   ui               Open the local app at http://127.0.0.1:8872/
@@ -55,9 +55,9 @@ Author: Aziel Eliab
 """
 
 WELCOME = """\
-FoldLock makes a UTF-8 text file smaller when it can, then restores the same bytes.
+FoldLock folds any file it can make smaller, and leaves the rest alone.
 
-Open the local app, or fold a text file you already have.
+Open the local app, or fold a file you already have.
 
   foldlock ui
   foldlock fold notes.txt
@@ -71,6 +71,8 @@ _STRATEGY = {
     "teth_peer": "tether fold with peer words",
     "sir": "structural fold",
     "bodyx": "mixed fold",
+    "byte": "byte tether",
+    "byte-tether": "byte tether",
     "tether-suppression": "tether fold",
     "adaptive": "adaptive fold",
 }
@@ -96,7 +98,7 @@ def _usage_error(prog: str, message: str) -> str:
             return "Unfold needs a folded file.\nTry:  foldlock unfold notes.txt.fld"
         if prog.endswith(" info"):
             return "Info needs a file.\nTry:  foldlock info notes.txt.fld"
-        return "Fold needs a text file.\nTry:  foldlock fold notes.txt"
+        return "Fold needs a file.\nTry:  foldlock fold notes.txt"
     if message.startswith("unrecognized arguments"):
         return f"{message}.\nTry:  foldlock --help"
     return f"{message}.\nTry:  foldlock --help"
@@ -123,11 +125,11 @@ def _build_parser() -> HumanParser:
         "fold",
         parents=[_json_parent()],
         help="Fold a text file.",
-        description="Fold a UTF-8 text file. The file is left unchanged when folding would not shrink it.",
+        description="Fold any readable file. The file is left unchanged when folding would not shrink it.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="Example:\n  foldlock fold notes.txt\n  foldlock fold notes.txt --json",
     )
-    fold_p.add_argument("src", help="UTF-8 text file to fold.")
+    fold_p.add_argument("src", help="File to fold.")
     fold_p.add_argument("--out", help="Where to write the result. Default: INFILE.fld")
     fold_p.add_argument(
         "--latin-pack",
@@ -264,7 +266,7 @@ def _plain_failure(cmd: str, exc: BaseException) -> str:
         return f'No file at "{target}".\nTry:  foldlock {cmd} notes.txt'
     if isinstance(exc, IsADirectoryError):
         target = getattr(exc, "filename", None) or "that path"
-        return f'"{target}" is a directory.\nTry a text file:  foldlock fold notes.txt'
+        return f'"{target}" is a directory.\nTry a file:  foldlock fold notes.txt'
     if isinstance(exc, PermissionError):
         target = exc.filename or "that file"
         return f'Cannot read "{target}".\nCheck the file permission, then try again.'
@@ -275,12 +277,12 @@ def _plain_failure(cmd: str, exc: BaseException) -> str:
     if "already-compressed" in low or "compressed input" in low:
         return (
             "That file is already compressed, so FoldLock did not fold it.\n"
-            "Try a UTF-8 text file:  foldlock fold notes.txt"
+            "Try another file:  foldlock fold notes.txt"
         )
     if "binary" in low or "utf-8" in low:
         return (
             "That file is not UTF-8 text, so FoldLock did not fold it.\n"
-            "Try a UTF-8 text file:  foldlock fold notes.txt"
+            "Try another file:  foldlock fold notes.txt"
         )
     if "fld2" in low:
         return (

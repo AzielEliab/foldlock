@@ -283,13 +283,19 @@ def classify(raw: bytes, name: str = "") -> Classification:
 
 
 def allowlist_for(kind: str) -> tuple[str, ...]:
-    """Strategies allowed to compete for this class."""
+    """Strategies allowed to compete for this class.
+
+    Extension and magic are hints. Every class still gets the byte-tether
+    lane, added by the bakeoff, so a file is never refused before the try.
+    """
     if kind == KIND_PROSE:
-        return ("sir", "teth", "teth_peer", "bodyx")
+        return ("sir", "teth", "teth_peer", "bodyx", "byte")
     if kind == KIND_CODE:
-        return ("teth",)
+        return ("teth", "byte")
     if kind == KIND_MARKUP:
-        return ("teth",)
+        return ("teth", "byte")
     if kind == KIND_MIXED:
-        return ("sir", "teth")
-    return ()
+        return ("sir", "teth", "byte")
+    if kind == KIND_COMPRESSED:
+        return ("byte",)
+    return ("byte",)

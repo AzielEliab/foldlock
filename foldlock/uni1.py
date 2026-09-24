@@ -11,7 +11,6 @@ import subprocess
 
 from foldlock.classify import (
     ID_KIND,
-    KIND_COMPRESSED,
     KIND_ID,
     allowlist_for,
     classify,
@@ -38,6 +37,7 @@ STRAT_TETH = 1
 STRAT_SIR = 2
 STRAT_BODYX = 3
 STRAT_TETH_PEER = 4
+STRAT_BYTE = 5
 
 STRAT_NAME = {
     STRAT_PASS: "passthrough",
@@ -45,6 +45,7 @@ STRAT_NAME = {
     STRAT_SIR: "sir",
     STRAT_BODYX: "bodyx",
     STRAT_TETH_PEER: "teth_peer",
+    STRAT_BYTE: "byte",
 }
 NAME_STRAT = {v: k for k, v in STRAT_NAME.items()}
 
@@ -58,6 +59,7 @@ METHOD_FOR = {
     "sir": "sir",
     "bodyx": "bodyx",
     "teth_peer": "tether-peer",
+    "byte": "byte-tether",
 }
 
 
@@ -196,6 +198,8 @@ def _receipt_base(raw: bytes, blob: bytes, stats: dict, cls, strategy: str) -> d
         "latin_hits": stats.get("latin_hits", 0),
         "local_hits": stats.get("local_hits", 0),
         "number_hits": stats.get("number_hits", 0),
+        "byte_runs": stats.get("byte_runs", 0),
+        "byte_refs": stats.get("byte_refs", 0),
         "latin_pack": bool(stats.get("latin_pack")),
         "orig_size": len(raw),
         "folded_size": folded,
@@ -235,22 +239,15 @@ def fold_adaptive(
     from foldlock.sir import encode_bodyx, encode_sir
 
     cls = classify(raw, name)
-    if cls.kind == KIND_COMPRESSED:
-        raise FoldRefuse(
-            "FoldLock refuses already-compressed input "
-            f"({cls.media or cls.reason}). "
-            "This is not a zip wrapper. Use passthrough outside FoldLock "
-            "or do not fold png/jpg/pdf/zip/zst."
-        )
     try:
-        text = raw.decode("utf-8")
-    except UnicodeDecodeError as e:
-        raise FoldRefuse(
-            "FoldLock v0.8 folds UTF-8 text by adaptive tether/SIR suppression. "
-            "Binary input is refused. This is not a zip wrapper."
-        ) from e
+        text: str | None = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        text = None
 
-    allowed = allowlist_for(cls.kind)
+    allowed = set(allowlist_for(cls.kind))
+    allowed.add("byte")
+    if text is None:
+        allowed = {"byte"}
     bakeoff: list[dict] = []
     best: tuple[int, str, bytes, dict] | None = None
 
@@ -269,14 +266,14 @@ def fold_adaptive(
         if best is None or len(blob) < best[0]:
             best = (len(blob), strategy, blob, stats)
 
-    if "teth" in allowed:
+    if "teth" in allowed and text is not None:
         body, stats = suppress(text)
         blob = pack_fld3(raw, body, stats)
         stats = dict(stats)
         stats["body_size"] = len(body)
         consider("teth", blob, stats)
 
-    if "teth_peer" in allowed:
+    if "teth_peer" in allowed and text is not None:
         payload, stats = encode_sir(
             text,
             use_peer=True,
@@ -299,7 +296,7 @@ def fold_adaptive(
         stats["body_size"] = len(payload)
         consider("teth_peer", blob, stats)
 
-    if "sir" in allowed:
+    if "sir" in allowed and text is not None:
         payload, stats = encode_sir(
             text,
             use_peer=True,
@@ -322,7 +319,7 @@ def fold_adaptive(
         stats["body_size"] = len(payload)
         consider("sir", blob, stats)
 
-    if "bodyx" in allowed:
+    if "bodyx" in allowed and text is not None:
         payload, stats = encode_bodyx(text)
         blob = pack_uni1(
             raw,
@@ -334,6 +331,19 @@ def fold_adaptive(
         stats = dict(stats)
         stats["body_size"] = len(payload)
         consider("bodyx", blob, stats)
+
+    if "byte" in allowed:
+        from foldlock.bytefold import encode_byte
+
+        payload, stats = encode_byte(raw)
+        blob = pack_uni1(
+            raw,
+            payload,
+            strategy=STRAT_BYTE,
+            klass=KIND_ID.get(cls.kind, 3),
+            flags=0,
+        )
+        consider("byte", blob, stats)
 
     if best is None:
         stats = {
@@ -363,6 +373,15 @@ def info_uni1(blob: bytes) -> dict:
     meta.pop("digest_raw", None)
     # cheap opcode census on SIR-like payloads
     hits = 0
+    if meta["strategy_id"] == STRAT_BYTE:
+        from foldlock.bytefold import count_ops
+
+        runs, refs = count_ops(payload)
+        meta["byte_runs"] = runs
+        meta["byte_refs"] = refs
+        meta["tether_hits"] = runs + refs
+        meta["limitation"] = LIMITATION
+        return meta
     if meta["strategy_id"] in {STRAT_SIR, STRAT_TETH_PEER, STRAT_TETH}:
         i = 0
         # skip SIR dict prefix

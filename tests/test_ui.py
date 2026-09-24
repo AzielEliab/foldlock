@@ -65,7 +65,15 @@ def test_ui_get_root_honest_scope() -> None:
         with urllib.request.urlopen(req, timeout=8) as resp:
             state = json.loads(resp.read().decode("utf-8"))
         assert state["zip"] is False
-        assert state["method"] in {"tether-suppression", "passthrough", "sir", "adaptive", "tether-peer", "bodyx"}
+        assert state["method"] in {
+            "tether-suppression",
+            "passthrough",
+            "sir",
+            "adaptive",
+            "tether-peer",
+            "bodyx",
+            "byte-tether",
+        }
         assert state["verify"]["ok"] is True
         assert state["receipt"]["orig_size"] == 63
         assert state["receipt"]["folded_size"] <= 63

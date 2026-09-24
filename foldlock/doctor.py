@@ -110,28 +110,46 @@ def _check_short_string() -> Check:
     return _ok("short string", "passthrough, did not grow")
 
 
-def _check_binary_refused() -> Check:
-    png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 16
+def _check_binary_left_or_smaller() -> Check:
+    png = b"\x89PNG\r\n\x1a\n" + b"\x00\x01\x02\x03" * 8
     try:
-        fold_bytes(png, name="x.png")
+        blob, receipt = fold_bytes(png, name="x.png")
     except (ValueError, FoldRefuse) as exc:
-        msg = str(exc).lower()
-        if "binary" in msg or "utf-8" in msg or "zip" in msg or "compress" in msg or "png" in msg:
-            return _ok("refuse binary", "PNG-like bytes refused")
-        return _fail("refuse binary", str(exc))
-    return _fail("refuse binary", "PNG-like bytes were folded")
+        return _fail("any png", str(exc))
+    if len(blob) > len(png):
+        return _fail("any png", f"grew {len(blob)} > {len(png)}")
+    restored, un = unfold_bytes(blob)
+    if restored != png or un.get("verified") is not True:
+        return _fail("any png", "restore failed")
+    return _ok("any png", f"{receipt.get('strategy')} {len(png)}→{len(blob)}")
 
 
-def _check_zip_refused() -> Check:
-    zipped = b"PK\x03\x04" + b"hello text payload"
+def _check_repetitive_bytes_shrink() -> Check:
+    raw = b"\x89PNG\r\n\x1a\n" + b"\x00" * 400
     try:
-        fold_bytes(zipped, name="x.zip")
+        blob, receipt = fold_bytes(raw, name="pad.png")
     except (ValueError, FoldRefuse) as exc:
-        msg = str(exc).lower()
-        if "compress" in msg or "zip" in msg:
-            return _ok("refuse zip", "ZIP magic refused")
-        return _fail("refuse zip", str(exc))
-    return _fail("refuse zip", "ZIP magic was folded")
+        return _fail("byte shrink", str(exc))
+    restored, un = unfold_bytes(blob)
+    if restored != raw or un.get("verified") is not True:
+        return _fail("byte shrink", "restore failed")
+    if len(blob) >= len(raw) or receipt.get("strategy") != "byte":
+        return _fail("byte shrink", f"{receipt.get('strategy')} {len(raw)}→{len(blob)}")
+    return _ok("byte shrink", f"{len(raw)}→{len(blob)}")
+
+
+def _check_zip_left_or_smaller() -> Check:
+    zipped = b"PK\x03\x04" + bytes(range(64))
+    try:
+        blob, receipt = fold_bytes(zipped, name="x.zip")
+    except (ValueError, FoldRefuse) as exc:
+        return _fail("any zip", str(exc))
+    if len(blob) > len(zipped):
+        return _fail("any zip", f"grew {len(blob)}")
+    restored, un = unfold_bytes(blob)
+    if restored != zipped or un.get("verified") is not True:
+        return _fail("any zip", "restore failed")
+    return _ok("any zip", f"{receipt.get('strategy')} {len(zipped)}→{len(blob)}")
 
 
 def _check_fld2_refused() -> Check:
@@ -224,8 +242,9 @@ CHECKS: tuple[Callable[[], Check], ...] = (
     _check_vectors,
     _check_line_hits,
     _check_short_string,
-    _check_binary_refused,
-    _check_zip_refused,
+    _check_binary_left_or_smaller,
+    _check_repetitive_bytes_shrink,
+    _check_zip_left_or_smaller,
     _check_fld2_refused,
     _check_mixed_case,
     _check_fld3_still_unfolds,

@@ -76,6 +76,7 @@ h2, h3 {
   box-shadow: var(--shadow);
 }
 .panel { padding: 1.15rem 1.15rem 1.2rem; }
+.panel.drag { outline: 3px solid var(--focus); outline-offset: 2px; }
 label, .help { display: block; margin: 0 0 0.45rem; font-size: 0.95rem; }
 textarea, input[type="file"] {
   width: 100%;

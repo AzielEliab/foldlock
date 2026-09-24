@@ -37,16 +37,27 @@ def test_cli_version(capsys) -> None:
     assert "0.8.0" in capsys.readouterr().out
 
 
-def test_cli_refuse_binary(tmp_path: Path) -> None:
+def test_cli_png_left_alone(tmp_path: Path, capsys) -> None:
     blob = tmp_path / "x.bin"
     blob.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\xff" * 8)
-    assert main(["fold", str(blob), "--out", str(tmp_path / "x.fld")]) == 1
+    out = tmp_path / "x.fld"
+    assert main(["fold", str(blob), "--out", str(out)]) == 0
+    text = capsys.readouterr().out
+    assert "Left as-is" in text or "Folded" in text
+    assert "Traceback" not in text
+    assert main(["unfold", "--json", str(out), "--out", str(tmp_path / "x.out")]) == 0
+    un = json.loads(capsys.readouterr().out)
+    assert un["verified"] is True
+    assert (tmp_path / "x.out").read_bytes() == blob.read_bytes()
 
 
-def test_cli_refuse_zip(tmp_path: Path) -> None:
+def test_cli_zip_left_alone(tmp_path: Path, capsys) -> None:
     blob = tmp_path / "x.zip"
     blob.write_bytes(b"PK\x03\x04" + b"hello")
-    assert main(["fold", str(blob), "--out", str(tmp_path / "x.fld")]) == 1
+    assert main(["fold", str(blob), "--out", str(tmp_path / "x.fld")]) == 0
+    text = capsys.readouterr().out
+    assert "Left as-is" in text or "Folded" in text
+    assert "Traceback" not in text
 
 
 def test_cli_prose_roundtrip(tmp_path: Path, capsys) -> None:
@@ -91,13 +102,13 @@ def test_cli_welcome_help_and_errors(tmp_path: Path, capsys) -> None:
     assert "Try:" in missing_err
     assert "Traceback" not in missing_err
 
-    blob = tmp_path / "x.png"
-    blob.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\xff" * 8)
-    assert main(["fold", str(blob)]) == 1
-    png_err = capsys.readouterr().err
-    assert "compressed" in png_err.lower()
-    assert "Try" in png_err
-    assert "Traceback" not in png_err
+    blob = tmp_path / "pad.png"
+    blob.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 400)
+    assert main(["fold", "--json", str(blob), "--out", str(tmp_path / "pad.fld")]) == 0
+    folded = json.loads(capsys.readouterr().out)
+    assert folded["strategy"] == "byte"
+    assert folded["folded_size"] < folded["orig_size"]
+    assert folded["zip"] is False
 
 
 def test_cli_human_fold_is_not_json(tmp_path: Path, capsys) -> None:

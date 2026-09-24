@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 
 from foldlock.classify import KIND_CODE, KIND_COMPRESSED, KIND_MARKUP, KIND_PROSE, classify
+from foldlock.bytefold import decode_byte, encode_byte
 from foldlock.engine import MAGIC, MAGIC_UNI1, fold_bytes, unfold_bytes, verify_bytes
-from foldlock.uni1 import FoldRefuse
 
 ROOT = Path(__file__).resolve().parents[1]
 PROSE = (ROOT / "examples" / "PROSE.txt").read_bytes()
@@ -27,18 +27,56 @@ def test_short_string_does_not_grow() -> None:
         assert un["zip"] is False
 
 
-def test_refuse_png_fixture() -> None:
+def test_png_fixture_left_alone_or_smaller() -> None:
     png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 32
-    with pytest.raises(FoldRefuse, match="compress|png|zip"):
-        fold_bytes(png, name="fixture.png")
+    blob, receipt = fold_bytes(png, name="fixture.png")
     assert classify(png, "fixture.png").kind == KIND_COMPRESSED
+    assert receipt["grew"] is False
+    assert len(blob) <= len(png)
+    restored, un = unfold_bytes(blob)
+    assert restored == png
+    assert un["verified"] is True
 
 
-def test_refuse_zip_fixture() -> None:
+def test_zip_fixture_left_alone_or_smaller() -> None:
     zipped = b"PK\x03\x04" + b"not a real zip but magic is enough"
-    with pytest.raises(FoldRefuse, match="compress|zip"):
-        fold_bytes(zipped, name="fixture.zip")
+    blob, receipt = fold_bytes(zipped, name="fixture.zip")
     assert classify(zipped, "fixture.zip").kind == KIND_COMPRESSED
+    assert receipt["grew"] is False
+    assert len(blob) <= len(zipped)
+    restored, un = unfold_bytes(blob)
+    assert restored == zipped
+    assert un["verified"] is True
+
+
+def test_byte_lane_roundtrip_runs_and_windows() -> None:
+    samples = (
+        b"\xff" * 300,
+        b"abcd" * 80,
+        bytes(range(256)) + b"\xff\xff",
+    )
+    for raw in samples:
+        payload, _stats = encode_byte(raw)
+        assert decode_byte(payload) == raw
+    blob, receipt = fold_bytes(b"abcd" * 80, name="wave.bin")
+    assert receipt["strategy"] == "byte"
+    assert receipt["byte_refs"] >= 1
+    assert receipt["folded_size"] < 320
+    restored, un = unfold_bytes(blob)
+    assert restored == b"abcd" * 80
+    assert un["verified"] is True
+
+
+def test_repetitive_png_shrinks_and_restores() -> None:
+    raw = b"\x89PNG\r\n\x1a\n" + b"\x00" * 400
+    blob, receipt = fold_bytes(raw, name="pad.png")
+    assert receipt["strategy"] == "byte"
+    assert receipt["zip"] is False
+    assert receipt["folded_size"] < len(raw)
+    assert receipt["byte_runs"] >= 1
+    restored, un = unfold_bytes(blob)
+    assert restored == raw
+    assert un["verified"] is True
 
 
 def test_prose_shrinks_and_restores() -> None:
@@ -47,7 +85,7 @@ def test_prose_shrinks_and_restores() -> None:
     assert receipt["class"] == KIND_PROSE
     assert receipt["folded_size"] < len(PROSE)
     assert blob[:4] in {MAGIC, MAGIC_UNI1}
-    assert receipt["strategy"] in {"sir", "teth", "teth_peer", "bodyx"}
+    assert receipt["strategy"] in {"sir", "teth", "teth_peer", "bodyx", "byte"}
     restored, un = unfold_bytes(blob)
     assert restored == PROSE
     assert un["verified"] is True
