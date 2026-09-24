@@ -1,6 +1,5 @@
 import { handleMeshApi } from "./mesh.js";
 import { handleRuntimeApi } from "./runtime.js";
-import { LIMITATION } from "./codec.js";
 import { classifyRequest, readBotManagement } from "./classify.js";
 import {
   isolatedKeys,
@@ -392,51 +391,192 @@ async function indexHtml(env) {
 </script>
 <!-- gitbaby-seo -->
 <style>
-  :root { color-scheme: dark; }
-  body { font: 16px/1.45 system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1.25rem 4rem; background: #0e1014; color: #e8eaef; }
-  .brandrow { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin: 0 0 1.15rem; }
+  :root {
+    color-scheme: dark;
+    --bg: #0e1014;
+    --ink: #f3efe4;
+    --muted: #c8c2b4;
+    --panel: #151922;
+    --panel-2: #10141b;
+    --line: #3a4152;
+    --gold: #e0c36a;
+    --btn: #f4f1ea;
+    --btn-ink: #14120e;
+    --link: #d6e0ff;
+    --focus: #ffffff;
+    --ok: #8ee0b0;
+    --mesh-bg: #12160e;
+    --mesh-line: #c9a227;
+    --code-bg: #0c0e12;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+      --bg: #f7f4ee;
+      --ink: #1c1914;
+      --muted: #3f3a32;
+      --panel: #ffffff;
+      --panel-2: #f3efe6;
+      --line: #d5cbb8;
+      --gold: #6d5410;
+      --btn: #1c1914;
+      --btn-ink: #f7f4ee;
+      --link: #1d3f86;
+      --focus: #1c1914;
+      --ok: #0f6b3c;
+      --mesh-bg: #fffdf8;
+      --mesh-line: #8a6a12;
+      --code-bg: #f3efe6;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { overflow-x: clip; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font: 16px/1.5 system-ui, "Segoe UI", sans-serif;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 1.15rem 1rem 2.75rem;
+    overflow-wrap: anywhere;
+  }
+  a { color: var(--link); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  a.skip { position: absolute; left: -999px; top: 0; }
+  a.skip:focus {
+    left: 1rem; top: 1rem; z-index: 5;
+    background: var(--btn); color: var(--btn-ink);
+    padding: .4rem .7rem; text-decoration: none;
+  }
+  .brandrow { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin: 0 0 .75rem; }
   .brandmark { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex: 0 0 auto; box-shadow: 0 0 0 1px #d4af3733; }
-  h1 { font-size: 1.75rem; margin: 0 0 .35rem; }
-  .motto { color: #9aa3b2; margin: 0 0 1.5rem; }
-  .card { border: 1px solid #2a3140; border-radius: 12px; padding: 1.25rem 1.35rem; background: #151922; }
-  .nums { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: 0 0 1rem; }
-  .count { font-size: 2.2rem; font-variant-numeric: tabular-nums; font-weight: 700; margin: 0; }
-  .count span { display: block; font-size: .95rem; font-weight: 500; color: #9aa3b2; }
-  .btns { display: flex; flex-wrap: wrap; gap: .7rem; margin: .85rem 0 1rem; }
-  a.dl, button.dl { display: inline-block; background: #e8eaef; color: #0e1014; text-decoration: none; font-weight: 700; padding: .95rem 1.25rem; border-radius: 10px; border: 0; font: inherit; font-weight: 700; cursor: pointer; font-size: 1.15rem; }
-  button.dl.alt { background: #c9a227; color: #0e1014; }
-  .meta { margin-top: 1.1rem; color: #9aa3b2; font-size: .92rem; }
-  .meta a { color: #c9d4ff; }
-  .iso { margin-top: .85rem; font-size: .85rem; color: #7d8696; }
-  .banner { border: 1px solid #5c4a1a; background: #241c0d; color: #f0d78c; padding: .85rem 1rem; border-radius: 8px; margin: 0 0 1.2rem; font-size: .92rem; }
-  .toast { margin: .4rem 0 0; min-height: 1.3rem; color: #3dba7a; font-weight: 650; }
-  pre { background: #0e1014; padding: .75rem .9rem; overflow: auto; border-radius: 8px; font-size: .82rem; }
-  code { font-size: .88rem; }
-
-  .cite { margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid #2a3140; }
-  .cite h2 { font-size: 1.05rem; margin: 0 0 .4rem; }
-  .cite p { color: #c5ccd8; font-size: .95rem; }
-  .cite a { color: #c9d4ff; }
-  #meshStrip { border: 1px solid #c9a227; border-radius: 12px; padding: .85rem 1rem; background: #101010; margin: 0 0 1.2rem; display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1rem; font-size: .88rem; color: #9aa3b2; }
-  #meshStrip .live { color: #e8eaef; }
-  #meshStrip .live b { color: #c9a227; font-size: 1.35rem; margin-right: .35rem; }
-  #meshStrip .rollup b { color: #c9a227; }
-  #meshStrip button { font: 700 .78rem/1 ui-monospace, Menlo, Consolas, monospace; height: 2rem; padding: 0 .75rem; border-radius: 8px; background: #101010; color: #e8eaef; border: 1px solid #c9a227; cursor: pointer; }
-  #meshStrip button:hover { background: #241c0d; color: #c9a227; }
-  #meshStrip input { width: 10rem; padding: .4rem .55rem; border: 1px solid #c9a227; border-radius: 8px; background: #0e0e0e; color: #e8eaef; font: inherit; }
-  #meshProducts { flex-basis: 100%; margin: 0; }
+  h1 { font-size: 2rem; font-weight: 650; letter-spacing: .02em; line-height: 1.15; margin: 0 0 .2rem; }
+  h2 { font-size: 1.05rem; font-weight: 650; letter-spacing: .02em; margin: 1.15rem 0 .4rem; }
+  .motto { color: var(--gold); font-style: italic; margin: 0 0 .45rem; font-size: 1.08rem; }
+  .lede { color: var(--muted); margin: 0 0 1rem; max-width: 40rem; }
+  a.btn.block.primary {
+    display: block; width: 100%; max-width: 40rem;
+    margin: 0 0 .7rem; padding: 1.05rem 1.2rem;
+    border: 1px solid transparent; border-radius: 10px;
+    background: var(--btn); color: var(--btn-ink);
+    text-align: center; text-decoration: none;
+    font: 700 1.25rem/1.15 ui-monospace, Menlo, Consolas, monospace;
+    letter-spacing: .03em; cursor: pointer;
+  }
+  a.btn.block.primary:hover { filter: brightness(1.06); }
+  a.btn.block.primary:focus-visible { outline-offset: 3px; }
+  .asset-note { color: var(--muted); font-size: .92rem; margin: 0 0 .2rem; }
+  .features { display: grid; grid-template-columns: 1fr; gap: .55rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+  .features li { margin: 0; padding-left: 1rem; position: relative; }
+  .features li::before {
+    content: ""; position: absolute; left: 0; top: .55em;
+    width: .4rem; height: .4rem; border-radius: 50%; background: var(--gold);
+  }
+  .card {
+    border: 1px solid var(--line); border-radius: 14px;
+    padding: 1.05rem 1rem 1.15rem; background: var(--panel); margin: 1.15rem 0;
+  }
+  .nums { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: 0; }
+  .count { font-size: 2rem; font-variant-numeric: tabular-nums; font-weight: 700; margin: 0; }
+  .count span { display: block; font-size: .92rem; font-weight: 500; color: var(--muted); }
+  button.secondary {
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px;
+    padding: .72rem .95rem; margin-top: .35rem;
+    font: 700 .95rem/1.2 ui-monospace, Menlo, Consolas, monospace;
+    cursor: pointer;
+  }
+  button.secondary:hover { background: var(--panel-2); }
+  .meta, .iso { color: var(--muted); font-size: .92rem; }
+  .iso { margin: .75rem 0 0; font-size: .85rem; }
+  .toast { margin: .45rem 0 0; min-height: 1.3rem; color: var(--ok); font-weight: 650; overflow-wrap: anywhere; }
+  pre, code { font-family: ui-monospace, Menlo, Consolas, monospace; }
+  pre {
+    background: var(--code-bg); color: var(--ink);
+    padding: .75rem .9rem; border-radius: 8px; font-size: .82rem;
+    max-width: 100%; margin: .75rem 0;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  code { font-size: .88em; }
+  .breakdown { margin: .3rem 0 0; padding-left: 1.1rem; }
+  .breakdown li { margin: .2rem 0; }
+  #meshStrip {
+    border: 1px solid var(--mesh-line); border-radius: 14px;
+    padding: .85rem 1rem; background: var(--mesh-bg);
+    margin: 0 0 1.15rem;
+    display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1rem;
+    font-size: .88rem; color: var(--muted);
+  }
+  #meshStrip > * { min-width: 0; max-width: 100%; }
+  #meshLine, #meshProducts, .mesh-note { flex: 1 1 100%; margin: 0; overflow-wrap: anywhere; }
+  #meshStrip .live { color: var(--ink); }
+  #meshStrip .live b { color: var(--gold); font-size: 1.35rem; margin-right: .35rem; }
+  #meshStrip .rollup b { color: var(--gold); }
+  .mesh-controls { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: .45rem; }
+  #meshStrip button {
+    font: 700 .78rem/1 ui-monospace, Menlo, Consolas, monospace;
+    min-height: 2rem; padding: 0 .75rem; border-radius: 8px;
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--mesh-line); cursor: pointer;
+  }
+  #meshStrip button:hover { background: var(--panel-2); }
+  #meshStrip input {
+    flex: 1 1 12rem; width: auto; min-width: 0; max-width: 100%;
+    padding: .4rem .55rem; border: 1px solid var(--mesh-line); border-radius: 8px;
+    background: var(--code-bg); color: var(--ink); font: inherit;
+  }
+  footer.quiet { color: var(--muted); font-size: .9rem; margin-top: .4rem; }
+  footer.quiet p { margin: .35rem 0; }
+  footer.quiet a { color: var(--link); }
+  .cite { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--line); }
+  .cite h2 { font-size: 1rem; margin: 0 0 .35rem; color: var(--ink); }
+  .cite p { color: var(--muted); font-size: .92rem; }
+  @media (min-width: 800px) {
+    body { padding: 2.25rem 1.5rem 3.5rem; }
+    .features { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem 1.1rem; }
+  }
+  @media (max-width: 420px) {
+    h1 { font-size: 1.85rem; }
+    .count { font-size: 1.75rem; }
+    .mesh-controls { flex-direction: column; align-items: stretch; }
+    .mesh-controls button, .mesh-controls input { width: 100%; }
+  }
 </style>
 <body>
-  <div class="brandrow"><img class="brandmark" src="/sigil.png" width="40" height="40" alt="" decoding="async"></div>
-  <h1>FoldLock</h1>
-  <p class="motto">Compression software. Compression engine. Zip-class. SOTA adaptive UNI1. Author Aziel Eliab.</p>
-  <p class="banner">${LIMITATION}<br>zip: False (not the ZIP file format) · method: adaptive UNI1. Verify hashes in the local UI. Run <code>foldlock doctor</code>.</p>
+  <a class="skip" href="#downloadBtn">Skip to download</a>
+  <header class="hero">
+    <div class="brandrow"><img class="brandmark" src="/sigil.png" width="40" height="40" alt="" decoding="async"></div>
+    <h1>FoldLock</h1>
+    <p class="motto">Compression software. Compression engine.</p>
+    <p class="lede">Zip-class adaptive UNI1 on UTF-8 text: classify, bake off, and pass through. Author Aziel Eliab.</p>
+    <a class="btn block primary" id="downloadBtn" href="/download?asset=${DEFAULT_ASSET}" aria-describedby="downloadNote">Download</a>
+    <p class="asset-note" id="downloadNote">${DEFAULT_ASSET} · counted on this Worker for every branch and fork</p>
+    <ul class="features">
+      <li>Common words fold out of a story so the file can get smaller.</li>
+      <li>Unfold puts those words back and checks the size and the hash.</li>
+      <li>Short notes stay the same size. Already-compressed files are refused.</li>
+    </ul>
+  </header>
+  <section class="card" id="tracker" aria-labelledby="tracker-heading">
+    <h2 id="tracker-heading">Counted downloads</h2>
+    <div class="nums">
+      <p class="count">${v}<span>Views</span></p>
+      <p class="count">${n}<span>Downloads</span></p>
+    </div>
+    <h2>Install on this computer</h2>
+    <p class="meta">One-click install copies a Terminal command. It downloads this same file. Then run <code>foldlock ui</code> and open http://127.0.0.1:8872 on this computer.</p>
+    <button type="button" class="secondary" id="btn-install">One-click install</button>
+    <p class="toast" id="install-toast" role="status"></p>
+    <pre id="install-line">${INSTALL_LINE}</pre>
+    <p class="iso">Isolated counter: Worker <code>foldlock-download-tracker</code>, project <code>foldlock</code>, KV <code>FOLDLOCK_DOWNLOADS</code>. Page views and downloads stay on their own keys. /v1 does not increment downloads.</p>
+    <h2>Per repo / branch / fork</h2>
+    <ul class="breakdown">${breakdown}</ul>
+  </section>
   <div id="meshStrip" aria-label="Suite Live Nodes">
     <div class="live"><b id="meshLiveCount">0</b> Live Nodes</div>
     <div id="meshLine">Suite mesh: off (default). QNM-BUILD-1.0. QNS-CD-1.0. Not an anonymity network.</div>
     <div class="rollup">live <b id="qnmLive">0</b> · locked <b id="qnmLocked">0</b> · isolated <b id="qnmIsolated">0</b></div>
-    <div>No Node Gate · No auto-heal · Aziel Eliab only</div>
-    <div>
+    <div class="mesh-note">No Node Gate · No auto-heal · Aziel Eliab only</div>
+    <div class="mesh-controls">
       <input id="meshBearer" type="text" maxlength="80" placeholder="bearer (required to enable)" aria-label="mesh bearer">
       <button id="meshEnable" type="button" title="Enable suite mesh. Declared bearer required. Default off.">Enable</button>
       <button id="meshDisable" type="button" title="Disable suite mesh (always allowed)">Disable</button>
@@ -444,26 +584,6 @@ async function indexHtml(env) {
       <button id="meshLeave" type="button" title="Leave this node. No auto-heal.">Leave</button>
     </div>
     <p id="meshProducts">Catalog MCP mesh_* · FragGate slug=mesh · QNS-CD-1.0 cross-map · /v1/mesh/* PROXY · not AnonBroadcast · not AZMail ring · not a Node Gate · no public qnsd proxy</p>
-  </div>
-  <div class="card">
-    <div class="nums">
-      <p class="count">${v}<span>Views</span></p>
-      <p class="count">${n}<span>Downloads</span></p>
-    </div>
-    <div class="btns">
-      <a class="dl" href="/download?asset=${DEFAULT_ASSET}">Download</a>
-      <button type="button" class="dl alt" id="btn-install">One-click install</button>
-    </div>
-    <p class="toast" id="install-toast"></p>
-    <p class="meta">Tap <strong>Download</strong> to get the gzip from this Worker (HTTP 200, counted). Tap <strong>One-click install</strong> to copy the one-liner, then paste it in Terminal and press Enter. A sixth-grader can tap it. Forks using this same link are counted automatically.</p>
-    <h2>One-click install</h2>
-    <pre id="install-line">${INSTALL_LINE}</pre>
-    <p class="iso">Isolated counter: Worker <code>foldlock-download-tracker</code>, project <code>foldlock</code>, KV <code>FOLDLOCK_DOWNLOADS</code>. Not mixed with any other product. /v1 does not increment downloads. Not the ZIP file format.</p>
-    <p class="meta">GitHub: stars ${gh.stars || 0} · forks ${gh.forks || 0} · watchers ${gh.watchers || 0} · release assets ${gh.release_download_count || 0}</p>
-    <p class="meta">Paper: <a href="${DOI}">doi:10.5281/zenodo.22257762</a> · <a href="${ZENODO}">Zenodo</a> · FoldLock_WhistleLock_FL-WP-0.3_WL-WP-0.1.pdf (this product is FoldLock only) · Apache-2.0 · Eliab, Aziel</p>
-    <p class="meta"><a href="/stats">JSON stats</a> · <a href="/openapi.json">OpenAPI</a> · <a href="/v1/mesh">/v1/mesh</a> · <a href="/v1/skill">Skill</a> · <a href="/ai">AI runtime</a> · <a href="${GITHUB_REPO}">GitHub</a> · <a href="${GITHUB_LATEST}">releases</a></p>
-    <h2>Per repo / branch / fork</h2>
-    <ul>${breakdown}</ul>
   </div>
   <script>
     (function () {
@@ -585,11 +705,16 @@ async function indexHtml(env) {
     })();
   </script>
 
-<section class="cite" id="cite">
-  <h2>How to cite</h2>
-  <p>Aziel Eliab. FoldLock. https://github.com/AzielEliab/foldlock. https://foldlock-download-tracker.vibelock.workers.dev. https://doi.org/10.5281/zenodo.22257762.</p>
-  <p><a href="https://aziel-runtime.vibelock.workers.dev/">Catalog</a> · <a href="https://github.com/AzielEliab/foldlock">GitHub</a> · <a href="https://foldlock-download-tracker.vibelock.workers.dev/download">Download</a> · <a href="https://foldlock-download-tracker.vibelock.workers.dev/cite.json">cite.json</a></p>
-</section>
+<footer class="quiet">
+  <p>Apache-2.0 · Aziel Eliab · FoldLock 0.8.0</p>
+  <p>GitHub: stars ${gh.stars || 0} · forks ${gh.forks || 0} · watchers ${gh.watchers || 0} · release assets ${gh.release_download_count || 0}</p>
+  <p><a href="/stats">JSON stats</a> · <a href="/openapi.json">OpenAPI</a> · <a href="/v1/mesh">/v1/mesh</a> · <a href="/v1/skill">Skill</a> · <a href="/ai">AI runtime</a> · <a href="${GITHUB_REPO}">GitHub</a> · <a href="${GITHUB_LATEST}">releases</a> · <a href="${DOI}">Paper</a> · <a href="${ZENODO}">Zenodo</a></p>
+  <section class="cite" id="cite">
+    <h2>How to cite</h2>
+    <p>Aziel Eliab. FoldLock. https://github.com/AzielEliab/foldlock. https://foldlock-download-tracker.vibelock.workers.dev. https://doi.org/10.5281/zenodo.22257762.</p>
+    <p><a href="https://aziel-runtime.vibelock.workers.dev/">Catalog</a> · <a href="https://github.com/AzielEliab/foldlock">GitHub</a> · <a href="https://foldlock-download-tracker.vibelock.workers.dev/download">Download</a> · <a href="https://foldlock-download-tracker.vibelock.workers.dev/cite.json">cite.json</a></p>
+  </section>
+</footer>
 <!-- /gitbaby-seo -->
 </body>
 </html>`;
