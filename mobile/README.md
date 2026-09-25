@@ -1,35 +1,21 @@
-# FoldLock — iPhone & Android
+# FoldLock on iPhone and Android
 
-Type a sentence. Fold pulls common little words. Unfold puts them back.
-This phone app is a kid-plain shell. The full FLD3 codec is the desktop package.
+The phone screen is a simple reader. The fold runs in the desktop package.
 
-Offline. No analytics. Dark matte / gold.
+**Author:** Aziel Eliab
 
-Application id: `com.azieeliab.foldlock`
+## Start
 
-Zip-class SOTA compression engine. Not a store listing. Not a separate repo.
+1. `cd mobile`
+2. `flutter create --org com.azieeliab --project-name foldlock .`
+3. `flutter pub get && flutter run`
 
-## Open in Android Studio / Xcode
+## Notes
 
-The `android/` and `ios/` folders here are skeleton READMEs because
-this tree was written without the Flutter SDK on PATH.
+Application id: `com.azieeliab.foldlock`. Offline. Light and dark follow the system. Gold focus.
 
-```bash
-cd mobile
-flutter create --org com.azieeliab --project-name foldlock .
-flutter pub get
-flutter run
-```
+FoldLock folds any file it can make smaller, and leaves the rest alone. A restore matches when the size and SHA-256 match. Ratios are per-file receipts.
 
-## Honest scope
-
-THIS IS compression software and a compression engine (zip-class SOTA adaptive UNI1).
-THIS IS NOT the ZIP file format. Ratios are per-file receipts. Short strings are left alone.
-
-## Desktop package (counted download)
-
-# → https://foldlock-download-tracker.vibelock.workers.dev/ ←
-
-GitHub: https://github.com/AzielEliab/foldlock
+Desktop package: https://github.com/AzielEliab/foldlock
 
 **Forks are welcome and always allowed.**

@@ -26,7 +26,7 @@ python -m pip install -U pip
 python -m pip install -e .
 
 echo
-echo "Installed FoldLock 0.8.0-UNI1 — zip-class SOTA compression engine."
-echo "Run:  foldlock ui"
-echo "Then open http://127.0.0.1:8872  (loopback only)"
-echo "Author: Aziel Eliab."
+echo "FoldLock 0.8.0 is installed."
+echo "Next:  foldlock ui"
+echo "Then open http://127.0.0.1:8872/"
+echo "Author: Aziel Eliab"

@@ -37,6 +37,10 @@ def test_ui_get_root_honest_scope() -> None:
         assert "Fold" in html
         assert "Unfold" in html
         assert "Verify" in html
+        assert 'id="about"' in html
+        assert html.index('id="about"') < html.index("THIS IS NOT")
+        assert 'id="advanced"' in html
+        assert "btn-fold" in html
         assert "cdnjs" not in html.lower()
         assert "unpkg" not in html.lower()
         assert "jsdelivr" not in html.lower()
@@ -44,6 +48,8 @@ def test_ui_get_root_honest_scope() -> None:
         with urllib.request.urlopen(f"http://127.0.0.1:{port}/style.css", timeout=3) as resp:
             css = resp.read().decode("utf-8")
         assert "--gold" in css or "c9a227" in css
+        assert "prefers-color-scheme" in css
+        assert ":focus-visible" in css
         with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/health", timeout=3) as resp:
             health = json.loads(resp.read().decode("utf-8"))
         assert health["ok"] is True
@@ -59,10 +65,26 @@ def test_ui_get_root_honest_scope() -> None:
         with urllib.request.urlopen(req, timeout=8) as resp:
             state = json.loads(resp.read().decode("utf-8"))
         assert state["zip"] is False
-        assert state["method"] in {"tether-suppression", "passthrough", "sir", "adaptive", "tether-peer", "bodyx"}
+        assert state["method"] in {
+            "tether-suppression",
+            "passthrough",
+            "sir",
+            "adaptive",
+            "tether-peer",
+            "bodyx",
+            "byte-tether",
+        }
         assert state["verify"]["ok"] is True
         assert state["receipt"]["orig_size"] == 63
         assert state["receipt"]["folded_size"] <= 63
+        machine = urllib.request.Request(
+            f"http://127.0.0.1:{port}/",
+            headers={"Accept": "application/json"},
+        )
+        with urllib.request.urlopen(machine, timeout=8) as resp:
+            machine_state = json.loads(resp.read().decode("utf-8"))
+        assert machine_state["product"] == "foldlock"
+        assert machine_state["zip"] is False
     finally:
         httpd.shutdown()
         httpd.server_close()

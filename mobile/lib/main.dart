@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 
 const limitation =
-    'THIS IS reversible tether-word suppression on UTF-8 text. '
-    'THIS IS NOT zip, zlib, gzip, a claim every file shrinks, UL, '
-    'EmployeeLock, TemporalLock, or GodLock. Ratios are receipts. '
-    'Short strings can grow. Author Aziel Eliab.';
+    'FoldLock folds any file it can make smaller, and leaves the rest alone. '
+    'The desktop package restores the same bytes when the size and SHA-256 match. '
+    'Ratios are per-file receipts. Author Aziel Eliab.';
 
 const vectors = 'the cat and the dog\n'
     'As is has to and or etc.\n'
@@ -25,7 +24,9 @@ class FoldLockApp extends StatelessWidget {
     return MaterialApp(
       title: 'FoldLock',
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
+      theme: buildLightTheme(),
+      darkTheme: buildAppTheme(),
+      themeMode: ThemeMode.system,
       home: const FoldPage(),
     );
   }
@@ -40,8 +41,8 @@ class FoldPage extends StatefulWidget {
 
 class _FoldPageState extends State<FoldPage> {
   final controller = TextEditingController(text: vectors);
-  String kid =
-      'Type a sentence. This phone app shows the idea. Full fold is the desktop package. Not zip.';
+  String status =
+      'Paste a sentence, then choose Fold. The fold itself runs in the desktop package.';
 
   @override
   void dispose() {
@@ -54,11 +55,12 @@ class _FoldPageState extends State<FoldPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('FoldLock')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         children: [
-          Text(limitation, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 12),
-          const Text('zip: False · method: tether-suppression · FLD3 / TETH-1'),
+          Text(
+            'FoldLock folds any file it can make smaller, and leaves the rest alone.',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: controller,
@@ -68,44 +70,62 @@ class _FoldPageState extends State<FoldPage> {
               border: OutlineInputBorder(),
             ),
           ),
+          const SizedBox(height: 16),
+          FilledButton(
+            onPressed: () {
+              setState(() {
+                status =
+                    'This phone screen does not fold the file. On the desktop package, run: foldlock fold notes.txt';
+              });
+            },
+            child: const Text('Fold'),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: () {
+              setState(() {
+                status =
+                    'Unfold restores the original bytes when the size and SHA-256 match. Use the desktop package: foldlock unfold notes.txt.fld';
+              });
+            },
+            child: const Text('Unfold'),
+          ),
+          const SizedBox(height: 16),
+          Text(status),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
+          ExpansionTile(
+            title: const Text('Advanced'),
             children: [
-              FilledButton(
-                onPressed: () {
+              ListTile(
+                title: const Text('Verify'),
+                subtitle: const Text(
+                  'Verify checks the size and SHA-256. The sample text is 63 bytes and is left unchanged.',
+                ),
+                onTap: () {
                   setState(() {
-                    kid =
-                        'Desktop FoldLock folds this with 3-byte opcodes. '
-                        'Unfold checks size and SHA-256. This phone screen does not wrap zip.';
+                    status =
+                        'Verify checks the size and SHA-256. The sample text is 63 bytes and is left unchanged.';
                   });
                 },
-                child: const Text('Fold'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  setState(() {
-                    kid = 'Unfold puts the little words back. verified True only if hashes match.';
-                  });
-                },
-                child: const Text('Unfold'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  setState(() {
-                    kid =
-                        'Verify is a hash check. VECTORS.txt is 63 bytes. zip is False.';
-                  });
-                },
-                child: const Text('Verify'),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(kid),
-          const SizedBox(height: 24),
-          const Text(
-            'Not a store listing. Full codec is Python stdlib on the desktop. Apache-2.0.',
+          ExpansionTile(
+            title: const Text('About'),
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Text(limitation),
+              ),
+              const ListTile(
+                title: Text('Author'),
+                subtitle: Text('Aziel Eliab · Apache-2.0'),
+              ),
+              const ListTile(
+                title: Text('Receipt'),
+                subtitle: Text('zip: False'),
+              ),
+            ],
           ),
         ],
       ),

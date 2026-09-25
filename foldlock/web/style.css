@@ -1,183 +1,208 @@
-/* FoldLock local UI. No CDN. Dark matte / gold. Zip-class SOTA UNI1. */
+/* FoldLock local app. System light/dark. Gold focus. No CDN. */
 :root {
-  --bg: #0b0b0b;
-  --panel: #141414;
-  --ink: #e8e0d0;
-  --muted: #8a8070;
-  --line: #2a261c;
+  color-scheme: light;
+  --bg: #f7f4ee;
+  --panel: #fffdf8;
+  --ink: #1a1714;
+  --muted: #4e4942;
+  --line: #e3d9c6;
   --gold: #c9a227;
-  --gold-dim: #8a7219;
-  --pass: #3dba7a;
-  --warn: #e0a13a;
-  --fail: #d4534b;
+  --focus: #8a6d12;
+  --gold-ink: #1a1408;
+  --pass: #0f6b3c;
+  --fail: #8d2a24;
+  --shadow: 0 1px 2px rgba(28, 24, 18, 0.04);
   font-synthesis: none;
 }
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #12110e;
+    --panel: #1c1a16;
+    --ink: #f4efe6;
+    --muted: #c8bfb0;
+    --line: #3a342c;
+    --gold: #c9a227;
+    --focus: #c9a227;
+    --gold-ink: #1a1408;
+    --pass: #8ed4ae;
+    --fail: #f0b0aa;
+    --shadow: none;
+  }
+}
 * { box-sizing: border-box; }
+html { font-size: 16px; }
 html, body {
   margin: 0;
-  padding: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: "Source Serif 4", "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
-  line-height: 1.45;
 }
 body {
-  max-width: 48rem;
+  max-width: 40rem;
   margin: 0 auto;
-  padding: 2.1rem 1.2rem 4rem;
+  padding: 1.75rem 1.1rem 3rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
 }
-.tag {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
+.topbar { margin-bottom: 1.25rem; }
+.mark {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
+  font-weight: 650;
 }
 h1 {
-  font-size: 2rem;
+  margin: 0.2rem 0 0.35rem;
+  font-size: 1.85rem;
   font-weight: 650;
-  letter-spacing: 0.04em;
-  margin: 0.35rem 0 0.25rem;
-  color: var(--gold);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
-.motto {
-  color: var(--gold);
-  font-style: italic;
-  margin: 0 0 0.85rem;
-  font-size: 1.05rem;
+h2, h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 650;
 }
-.lede {
+.lede, label, .help, .status, .receipt-note {
   color: var(--muted);
-  margin: 0 0 1.2rem;
-  max-width: 42rem;
 }
-.banner {
-  margin: 0 0 1.3rem;
-  padding: 0.9rem 1rem;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  font-size: 0.95rem;
-}
-.banner.limit {
-  background: #1a1610;
-  color: var(--ink);
-  border-color: var(--gold-dim);
-}
-.view-toggle {
-  display: flex;
-  gap: 0.4rem;
-  margin: 0 0 1rem;
-}
-button {
-  background: var(--gold);
-  color: var(--bg);
-  border: 1px solid var(--gold);
-  border-radius: 8px;
-  padding: 0.55rem 0.9rem;
-  font: inherit;
-  font-weight: 650;
-  cursor: pointer;
-}
-button.big {
-  font-size: 1.15rem;
-  padding: 0.85rem 1.4rem;
-  min-width: 7.5rem;
-}
-button.view {
-  background: transparent;
-  color: var(--ink);
-  border-color: var(--line);
-}
-button.view.on {
-  background: var(--gold);
-  color: var(--bg);
-  border-color: var(--gold);
-}
-.counts {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.6rem;
-  margin: 0 0 1.1rem;
-}
-.counts div {
+.lede { margin: 0; max-width: 36rem; }
+.panel, .more {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.7rem 0.8rem;
-  text-align: center;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
 }
-.counts span {
-  display: block;
-  font-size: 1.4rem;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
+.panel { padding: 1.15rem 1.15rem 1.2rem; }
+.panel.drag { outline: 3px solid var(--focus); outline-offset: 2px; }
+label, .help { display: block; margin: 0 0 0.45rem; font-size: 0.95rem; }
+textarea, input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
 }
-.counts label {
-  color: var(--muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.counts .ok span { color: var(--pass); }
+textarea { min-height: 9rem; resize: vertical; }
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  margin: 0 0 1.1rem;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0.35rem;
 }
-form fieldset {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel);
-  padding: 1rem 1.05rem 1.1rem;
-  margin: 0 0 1rem;
-}
-legend { color: var(--gold); padding: 0 0.4rem; }
-label {
-  display: block;
-  margin: 0.7rem 0 0.25rem;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-.kicker {
-  display: block;
-  color: var(--ink);
-  font-weight: 650;
-}
-textarea {
-  width: 100%;
-  background: #1a1a1a;
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 0.5rem 0.65rem;
+button, summary {
   font: inherit;
-  min-height: 8rem;
+  min-height: 44px;
 }
-textarea:focus {
-  outline: 2px solid var(--gold);
-  border-color: var(--gold);
+button {
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-weight: 650;
+  cursor: pointer;
 }
-body.simple .advanced-only { display: none !important; }
-.kid { font-size: 1.05rem; }
+button.primary {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border: 1px solid var(--gold);
+}
+button.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.status { margin: 0.85rem 0 0; color: var(--ink); }
+.more { margin-top: 0.75rem; }
+.more > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 650;
+  list-style: none;
+}
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::after {
+  content: "Show";
+  margin-left: auto;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.more[open] > summary::after { content: "Hide"; }
+.more-body { padding: 0 1rem 1.1rem; }
+.counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0.9rem 0 0.4rem;
+}
+.counts div {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.45rem;
+  text-align: center;
+  background: var(--bg);
+}
+.counts span {
+  display: block;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.counts label {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.receipt-note, .sha-line { margin: 0.45rem 0; font-size: 0.92rem; }
 .sha-line {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.82rem;
-  color: var(--muted);
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
-.advanced-panel pre {
-  background: #0e0e0e;
+pre {
+  margin: 0;
+  max-width: 100%;
+  background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 0.8rem;
+  padding: 0.75rem;
   overflow: auto;
   font-size: 0.78rem;
-  max-height: 22rem;
+  line-height: 1.45;
+  max-height: 18rem;
 }
 footer {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
 }
-.foot-note { font-size: 0.82rem; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  body { padding: 1.1rem 0.85rem 2.25rem; }
+  h1 { font-size: 1.55rem; }
+  .actions { flex-direction: column; }
+  .actions button { width: 100%; }
+  .counts { grid-template-columns: 1fr 1fr; }
+}
