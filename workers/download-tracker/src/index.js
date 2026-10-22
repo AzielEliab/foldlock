@@ -1,3 +1,4 @@
+import { crawlFileResponse } from "./crawl-files.js";
 import { handleMeshApi } from "./mesh.js";
 import { handleRuntimeApi } from "./runtime.js";
 import { LIMITATION } from "./codec.js";
@@ -598,6 +599,9 @@ async function indexHtml(env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // Crawl files (/llms.txt). Read-only; never counts a download.
+    const crawlFile = crawlFileResponse(url, request);
+    if (crawlFile) return crawlFile;
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders() });
